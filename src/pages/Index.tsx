@@ -1,179 +1,144 @@
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Star, Users, Shield } from "lucide-react";
-
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-primary">WebApp</h1>
-          <nav className="hidden md:flex space-x-6">
-            <a href="#home" className="text-foreground hover:text-primary transition-colors">Home</a>
-            <a href="#about" className="text-foreground hover:text-primary transition-colors">About</a>
-            <a href="#services" className="text-foreground hover:text-primary transition-colors">Services</a>
-            <a href="#contact" className="text-foreground hover:text-primary transition-colors">Contact</a>
-          </nav>
-          <Button>Get Started</Button>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section id="home" className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-5xl font-bold mb-6 text-foreground">
-            Welcome to Our Amazing Platform
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Discover the power of modern web technology with our innovative solutions 
-            designed to help you succeed in the digital world.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Start Your Journey
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8">
-              Learn More
-            </Button>
+import React from "react";
+import Layout from "@/components/Layout";
+import Hero from "@/components/Hero";
+import FeaturedProducts from "@/components/FeaturedProducts";
+import { motion } from "framer-motion";
+const Index: React.FC = () => {
+  return <Layout>
+      <div className="pt-16">
+        {/* Hero Section */}
+        <Hero />
+        
+        {/* Featured Products Section */}
+        <FeaturedProducts />
+        
+        {/* Craftsmanship Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <motion.div initial={{
+              opacity: 0,
+              x: -20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              duration: 0.8
+            }} viewport={{
+              once: true
+            }} className="space-y-6">
+                <span className="inline-block text-sm font-semibold tracking-wider uppercase text-primary/70">
+                  Our Process
+                </span>
+                <h2 className="text-3xl md:text-4xl font-serif font-bold">
+                  Exceptional Quality in Every Detail
+                </h2>
+                <p className="text-muted-foreground">At TableLK, we follow a meticulous process to craft high-quality furniture that blends durability with elegance. From selecting the finest raw materials to precision cutting and expert assembly, every step is handled with care to ensure exceptional craftsmanship and long-lasting value.</p>
+                <p className="text-muted-foreground">Our team of skilled artisans and designers work together to bring your vision to life. Using advanced techniques and quality finishes, we create furniture that meets both aesthetic and functional needs. Every piece undergoes strict quality checks before reaching your space, ensuring perfection in every detail.</p>
+                <div className="grid grid-cols-2 gap-6 pt-4">
+                  <div>
+                    <h3 className="font-medium text-xl mb-2">Quality Materials</h3>
+                    <p className="text-sm text-muted-foreground">We source our materials from responsible suppliers committed to sustainable practices.</p>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-xl mb-2">Expert Craftsmanship</h3>
+                    <p className="text-sm text-muted-foreground">Every product is meticulously crafted with attention to detail and quality.</p>
+                  </div>
+                </div>
+              </motion.div>
+              
+              <motion.div initial={{
+              opacity: 0,
+              x: 20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              duration: 0.8
+            }} viewport={{
+              once: true
+            }} className="relative h-[600px] rounded-lg overflow-hidden">
+                <img alt="Fashion design workshop" className="object-cover h-full w-full" src="/lovable-uploads/bd57dbe4-9301-4540-bddd-af928d6a0a2d.jpg" />
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="about" className="py-16 px-4 bg-muted/50">
-        <div className="container mx-auto">
-          <h3 className="text-3xl font-bold text-center mb-12">Why Choose Us?</h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <Star className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Premium Quality</CardTitle>
-                <CardDescription>
-                  We deliver exceptional quality in everything we do, ensuring your success.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+        </section>
+        
+        {/* Testimonials Section */}
+        <section className="py-20 bg-accent/40">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <span className="inline-block text-sm font-semibold tracking-wider uppercase text-primary/70 mb-3">
+                Customer Stories
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold">
+                What Our Clients Say
+              </h2>
+            </div>
             
-            <Card>
-              <CardHeader>
-                <Users className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Expert Team</CardTitle>
-                <CardDescription>
-                  Our experienced professionals are dedicated to bringing your vision to life.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <Shield className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Secure & Reliable</CardTitle>
-                <CardDescription>
-                  Built with security and reliability in mind, you can trust our platform.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[{
+              name: "Emily Johnson",
+              role: "Loyal Customer",
+              quote: "The quality of my TableLK products is exceptional. The attention to detail and the materials make their pieces stand out in my wardrobe.",
+              image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+            }, {
+              name: "Michael Chen",
+              role: "Fashion Enthusiast",
+              quote: "I've been a fan of TableLK for years. Their products consistently impress with their quality and style, and they always exceed my expectations.",
+              image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+            }, {
+              name: "Sofia Rodriguez",
+              role: "Style Blogger",
+              quote: "The accessories I purchased from TableLK are truly works of art. The design details are extraordinary, and they've become conversation pieces in my outfits.",
+              image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=761&q=80"
+            }].map((testimonial, index) => <motion.div key={index} initial={{
+              opacity: 0,
+              y: 20
+            }} whileInView={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.6,
+              delay: index * 0.1
+            }} viewport={{
+              once: true
+            }} className="bg-white p-8 rounded-lg shadow-soft">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
+                      <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                </motion.div>)}
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section id="services" className="py-16 px-4">
-        <div className="container mx-auto">
-          <h3 className="text-3xl font-bold text-center mb-12">Our Services</h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Web Development</CardTitle>
-                <CardDescription>
-                  Custom web applications built with modern technologies and best practices.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline">Learn More</Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Design Services</CardTitle>
-                <CardDescription>
-                  Beautiful, user-friendly designs that engage and convert your audience.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline">Learn More</Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Consulting</CardTitle>
-                <CardDescription>
-                  Strategic guidance to help you make the best technology decisions.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline">Learn More</Button>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Support</CardTitle>
-                <CardDescription>
-                  Ongoing support and maintenance to keep your systems running smoothly.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline">Learn More</Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer id="contact" className="bg-muted py-12 px-4 border-t">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-lg font-semibold mb-4">WebApp</h4>
-              <p className="text-muted-foreground">
-                Building the future of web applications, one project at a time.
+        </section>
+        
+        {/* Newsletter Section */}
+        <section className="py-20 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+                Join Our Newsletter
+              </h2>
+              <p className="text-primary-foreground/80 mb-8">
+                Subscribe to receive updates on new collections, special offers, and exclusive events.
               </p>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#home" className="hover:text-primary transition-colors">Home</a></li>
-                <li><a href="#about" className="hover:text-primary transition-colors">About</a></li>
-                <li><a href="#services" className="hover:text-primary transition-colors">Services</a></li>
-                <li><a href="#contact" className="hover:text-primary transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-              <div className="text-muted-foreground space-y-2">
-                <p>Email: hello@webapp.com</p>
-                <p>Phone: (555) 123-4567</p>
-                <p>Address: 123 Web Street, Digital City</p>
-              </div>
+              <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+                <input type="email" placeholder="Your email address" className="flex-1 px-4 py-3 rounded-md bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 transition-colors" required />
+                <button type="submit" className="px-6 py-3 bg-primary-foreground text-primary rounded-md hover:bg-primary-foreground/90 transition-colors font-medium">
+                  Subscribe
+                </button>
+              </form>
             </div>
           </div>
-          
-          <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 WebApp. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+        </section>
+      </div>
+    </Layout>;
 };
-
 export default Index;
