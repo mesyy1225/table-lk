@@ -73,7 +73,7 @@ const Navbar: React.FC = () => {
         {/* Logo - Fixed alignment */}
         <Link to="/" className="flex items-center">
           <img 
-            src="/lovable-uploads/188afeac-f211-4f16-bbfa-8018bbc74324.png" 
+            src="/lovable-uploads/1cac5524-fa49-4356-bd31-fd4dd22e5ac9.png" 
             alt="TableLK Logo" 
             className="h-10 md:h-12 w-auto object-contain"
           />
