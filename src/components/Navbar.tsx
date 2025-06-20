@@ -63,7 +63,10 @@ const Navbar: React.FC = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 transition-all duration-300 px-6 md:px-8 lg:px-12 py-3 bg-white shadow-sm"
+        "fixed top-0 left-0 right-0 z-40 transition-all duration-300 px-6 md:px-8 lg:px-12",
+        isScrolled
+          ? "py-3 bg-white/95 backdrop-blur-md shadow-sm"
+          : "py-5 bg-white/80 backdrop-blur-sm"
       )}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -167,7 +170,7 @@ const Navbar: React.FC = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white border-t mt-3"
+            className="md:hidden bg-white/95 backdrop-blur-md border-t mt-3"
           >
             <div className="max-w-7xl mx-auto py-4 flex flex-col">
               {navItems.map((item, index) => (

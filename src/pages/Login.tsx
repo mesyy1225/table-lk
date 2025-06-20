@@ -14,6 +14,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, state } = useAuth();
   const navigate = useNavigate();
 
@@ -27,15 +28,19 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
     
     try {
       await login(email, password);
       // Auth state will update via the Supabase subscription
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to login");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  // Only show loading screen if auth is still checking initial state
   if (state.isLoading) {
     return (
       <Layout>
@@ -115,9 +120,9 @@ const Login: React.FC = () => {
             <Button
               type="submit"
               className="w-full"
-              disabled={state.isLoading}
+              disabled={isSubmitting}
             >
-              {state.isLoading ? (
+              {isSubmitting ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -139,7 +144,7 @@ const Login: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Loading...
+                  Signing in...
                 </span>
               ) : (
                 <span className="flex items-center justify-center">
