@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <h3 className="font-serif text-xl font-semibold">TableLK</h3>
-            <p className="text-primary-foreground/80 max-w-xs">TableLK is a leading furniture manufacturer dedicated to crafting high-quality office tables. With a commitment to exceptional craftsmanship and innovative design, we transform spaces into functional and aesthetic environments</p>
+            <p className="text-primary-foreground/80 max-w-xs">TableLK is a leading furniture manufacturer dedicated to crafting high-quality Hybrid office tables. With a commitment to exceptional craftsmanship and innovative design, we transform spaces into functional and aesthetic environments</p>
             <div className="flex space-x-4 pt-2">
               <a href="https://www.facebook.com/people/TableLK/100088083387315/" target="_blank" rel="noopener noreferrer" className="hover:text-accent-foreground transition-colors" aria-label="Facebook">
                 <Facebook size={20} />
