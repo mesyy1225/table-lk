@@ -83,7 +83,7 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-6 md:px-8 relative z-10">
         <motion.div className="max-w-2xl text-white" variants={containerVariants} initial="hidden" animate={controls}>
           <div className="mb-6">
-            <img alt="TableLK Logo" className="h-20 md:h-24 w-auto object-contain" src="/lovable-uploads/1cac5524-fa49-4356-bd31-fd4dd22e5ac9.png" />
+            <img alt="TableLK Logo" className="h-20 md:h-24 w-auto object-contain" src="/lovable-uploads/e7511338-4de1-4aea-a3be-10f3a6b41823.png" />
           </div>
           
           <motion.div variants={itemVariants} className="inline-block mb-3 text-sm font-semibold tracking-wider uppercase bg-primary/30 backdrop-blur-sm px-3 py-1 rounded-full text-primary-foreground/90">CRAFTED FOR COMFORT</motion.div>
