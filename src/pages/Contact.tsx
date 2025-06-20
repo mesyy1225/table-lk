@@ -127,7 +127,7 @@ const Contact: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Email</h3>
-                      <p className="text-muted-foreground mt-1">madupani02@gmail.com</p>
+                      <p className="text-muted-foreground mt-1">bossfurniture@gmail.com</p>
                     </div>
                   </div>
 
