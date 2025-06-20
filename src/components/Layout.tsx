@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex-grow pb-16 pt-24 md:pt-28" // Added padding-top to prevent content from being hidden under the navbar
+        className="flex-grow pb-16"
       >
         {children}
       </motion.main>
