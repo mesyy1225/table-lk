@@ -48,8 +48,8 @@ const Register: React.FC = () => {
     }
   };
 
-  // Only show loading screen if auth is still checking initial state
-  if (state.isLoading) {
+  // Show loading screen only during initial auth check
+  if (state.isLoading && !state.isAuthenticated) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12 flex items-center justify-center">
@@ -94,6 +94,7 @@ const Register: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -106,6 +107,7 @@ const Register: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -119,6 +121,7 @@ const Register: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
                 <Button
                   type="button"
@@ -127,6 +130,7 @@ const Register: React.FC = () => {
                   className="absolute right-0 top-0 h-full px-3 py-2"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isSubmitting}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -146,6 +150,7 @@ const Register: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
 

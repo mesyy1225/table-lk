@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -20,7 +19,8 @@ interface AuthState {
 type AuthAction =
   | { type: "LOGIN_SUCCESS"; payload: User }
   | { type: "LOGOUT" }
-  | { type: "SET_LOADING"; payload: boolean };
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_INITIAL_LOADING_COMPLETE" };
 
 interface AuthContextProps {
   state: AuthState;
@@ -52,6 +52,11 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         isLoading: action.payload,
       };
+    case "SET_INITIAL_LOADING_COMPLETE":
+      return {
+        ...state,
+        isLoading: false,
+      };
     default:
       return state;
   }
@@ -68,9 +73,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check for existing session on mount
   useEffect(() => {
+    let mounted = true;
+    
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (error) {
+          console.error("Session check error:", error);
+          dispatch({ type: "SET_INITIAL_LOADING_COMPLETE" });
+          return;
+        }
         
         if (session) {
           // Fetch user profile data
@@ -89,11 +104,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           dispatch({ type: "LOGIN_SUCCESS", payload: userData });
         } else {
-          dispatch({ type: "SET_LOADING", payload: false });
+          dispatch({ type: "SET_INITIAL_LOADING_COMPLETE" });
         }
       } catch (error) {
         console.error("Session check error:", error);
-        dispatch({ type: "SET_LOADING", payload: false });
+        if (mounted) {
+          dispatch({ type: "SET_INITIAL_LOADING_COMPLETE" });
+        }
       }
     };
 
@@ -102,22 +119,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
+        console.log("Auth state change:", event, session?.user?.email);
+        
         if (event === 'SIGNED_IN' && session) {
-          // Fetch user profile data
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          const userData: User = {
-            id: session.user.id,
-            name: profile?.full_name || session.user.email?.split('@')[0] || 'User',
-            email: session.user.email || '',
-            avatar_url: profile?.avatar_url
-          };
-          
-          dispatch({ type: "LOGIN_SUCCESS", payload: userData });
+          // Use setTimeout to prevent potential deadlocks
+          setTimeout(async () => {
+            try {
+              // Fetch user profile data
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              
+              const userData: User = {
+                id: session.user.id,
+                name: profile?.full_name || session.user.email?.split('@')[0] || 'User',
+                email: session.user.email || '',
+                avatar_url: profile?.avatar_url
+              };
+              
+              dispatch({ type: "LOGIN_SUCCESS", payload: userData });
+            } catch (error) {
+              console.error("Error fetching profile:", error);
+              // Still log in even if profile fetch fails
+              const userData: User = {
+                id: session.user.id,
+                name: session.user.email?.split('@')[0] || 'User',
+                email: session.user.email || '',
+              };
+              dispatch({ type: "LOGIN_SUCCESS", payload: userData });
+            }
+          }, 0);
         } else if (event === 'SIGNED_OUT') {
           dispatch({ type: "LOGOUT" });
         }
@@ -125,14 +160,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
   // Login functionality
   const login = async (email: string, password: string) => {
-    dispatch({ type: "SET_LOADING", payload: true });
-
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -147,16 +181,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.success("Login successful!");
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       toast.error(error.message || "Login failed");
-      dispatch({ type: "SET_LOADING", payload: false });
       throw error;
     }
   };
 
   // Register functionality
   const register = async (name: string, email: string, password: string) => {
-    dispatch({ type: "SET_LOADING", payload: true });
-
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -165,6 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: {
             full_name: name,
           },
+          emailRedirectTo: `${window.location.origin}/`
         },
       });
 
@@ -176,8 +209,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.success("Registration successful! Check your email for confirmation.");
       }
     } catch (error: any) {
+      console.error("Registration error:", error);
       toast.error(error.message || "Registration failed");
-      dispatch({ type: "SET_LOADING", payload: false });
       throw error;
     }
   };
@@ -191,6 +224,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       toast.info("Logged out successfully");
     } catch (error: any) {
+      console.error("Logout error:", error);
       toast.error(error.message || "Logout failed");
     }
   };
