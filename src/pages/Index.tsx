@@ -3,17 +3,57 @@ import React from "react";
 import Layout from "@/components/Layout";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 
 const Index: React.FC = () => {
   return (
     <Layout>
+      <SEOHead 
+        title="TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka"
+        description="TableLK is Sri Lanka's leading furniture manufacturer specializing in premium hybrid office tables, desks, and custom furniture solutions. Quality craftsmanship, modern designs, affordable prices. Order online or WhatsApp +94 76 902 7347"
+        keywords="table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture, wooden table, modern table, ergonomic desk, workspace furniture, commercial furniture, buy table online Sri Lanka"
+        canonical="https://tablelk.com"
+      />
       <div>
         {/* Hero Section - removed padding */}
         <Hero />
         
         {/* Featured Products Section */}
         <FeaturedProducts />
+        
+        {/* SEO Content Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-serif font-bold mb-6 text-center">
+                Premium Tables and Office Furniture in Sri Lanka
+              </h2>
+              <div className="prose prose-lg max-w-none">
+                <p className="text-muted-foreground mb-4">
+                  Looking for high-quality <strong>office tables</strong> and <strong>furniture in Sri Lanka</strong>? TableLK is your trusted partner for premium workspace solutions. We specialize in manufacturing <strong>hybrid office tables</strong>, <strong>ergonomic desks</strong>, and <strong>custom furniture</strong> that combines functionality with elegant design.
+                </p>
+                <p className="text-muted-foreground mb-4">
+                  Our <strong>office tables</strong> are crafted using the finest materials and modern manufacturing techniques. Whether you need a single <strong>desk</strong> for your home office or bulk <strong>office furniture</strong> for your business, TableLK delivers exceptional quality at competitive prices across Sri Lanka.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                  <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                    <h3 className="font-semibold text-lg mb-2">Custom Tables</h3>
+                    <p className="text-sm text-muted-foreground">Bespoke office tables designed to your exact specifications and workspace requirements.</p>
+                  </div>
+                  <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                    <h3 className="font-semibold text-lg mb-2">Quality Materials</h3>
+                    <p className="text-sm text-muted-foreground">Premium wood and metal components ensuring durability and long-lasting performance.</p>
+                  </div>
+                  <div className="text-center p-6 bg-white rounded-lg shadow-sm">
+                    <h3 className="font-semibold text-lg mb-2">Island-wide Delivery</h3>
+                    <p className="text-sm text-muted-foreground">Fast and reliable delivery of office furniture across all regions of Sri Lanka.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         
         {/* Craftsmanship Section */}
         <section className="py-20">
@@ -62,7 +102,7 @@ const Index: React.FC = () => {
                 className="relative h-[600px] rounded-lg overflow-hidden"
               >
                 <img
-                  alt="Fashion design workshop"
+                  alt="TableLK furniture manufacturing workshop in Sri Lanka"
                   className="object-cover h-full w-full"
                   src="/lovable-uploads/bd57dbe4-9301-4540-bddd-af928d6a0a2d.jpg"
                 />
@@ -79,28 +119,28 @@ const Index: React.FC = () => {
                 Customer Stories
               </span>
               <h2 className="text-3xl md:text-4xl font-serif font-bold">
-                What Our Clients Say
+                What Our Clients Say About TableLK Furniture
               </h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-                  name: "Emily Johnson",
-                  role: "Loyal Customer",
-                  quote: "The quality of my TableLK products is exceptional. The attention to detail and the materials make their pieces stand out in my wardrobe.",
+                  name: "Priya Perera",
+                  role: "Office Manager",
+                  quote: "The quality of our TableLK office tables is exceptional. The attention to detail and the materials make their pieces stand out in our workspace. Highly recommend for any office furniture needs in Sri Lanka.",
                   image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
                 },
                 {
-                  name: "Michael Chen",
-                  role: "Fashion Enthusiast",
-                  quote: "I've been a fan of TableLK for years. Their products consistently impress with their quality and style, and they always exceed my expectations.",
+                  name: "Kasun Silva",
+                  role: "Business Owner",
+                  quote: "I've been purchasing furniture from TableLK for my offices across Colombo. Their tables consistently impress with their quality and style, and they always exceed my expectations with timely delivery.",
                   image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
                 },
                 {
-                  name: "Sofia Rodriguez",
-                  role: "Style Blogger",
-                  quote: "The accessories I purchased from TableLK are truly works of art. The design details are extraordinary, and they've become conversation pieces in my outfits.",
+                  name: "Chamari Fernando",
+                  role: "Interior Designer",
+                  quote: "The custom tables I ordered from TableLK are truly works of art. The design details are extraordinary, and they've become centerpieces in my client projects. Best furniture manufacturer in Sri Lanka!",
                   image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=761&q=80"
                 }
               ].map((testimonial, index) => (
@@ -137,10 +177,10 @@ const Index: React.FC = () => {
           <div className="container mx-auto px-6">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-                Join Our Newsletter
+                Join Our Newsletter for Latest Furniture Updates
               </h2>
               <p className="text-primary-foreground/80 mb-8">
-                Subscribe to receive updates on new collections, special offers, and exclusive events.
+                Subscribe to receive updates on new table collections, special offers, and exclusive furniture deals in Sri Lanka.
               </p>
               <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
                 <input
