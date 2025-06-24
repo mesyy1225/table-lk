@@ -11,7 +11,7 @@ const Index: React.FC = () => {
     <Layout>
       <SEOHead 
         title="TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka"
-        description="TableLK is Sri Lanka's leading furniture manufacturer specializing in premium hybrid office tables, desks, and custom furniture solutions. Quality craftsmanship, modern designs, affordable prices. Order online or WhatsApp +94 76 902 7347"
+        description="TableLK - Premium office tables, desks & custom furniture in Sri Lanka. Quality craftsmanship, modern designs, affordable prices. Order now!"
         keywords="table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture, wooden table, modern table, ergonomic desk, workspace furniture, commercial furniture, buy table online Sri Lanka"
         canonical="https://tablelk.com"
       />

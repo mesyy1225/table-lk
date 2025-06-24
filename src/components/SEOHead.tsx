@@ -11,7 +11,7 @@ interface SEOHeadProps {
 
 const SEOHead: React.FC<SEOHeadProps> = ({
   title = "TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka",
-  description = "TableLK is Sri Lanka's leading furniture manufacturer specializing in premium hybrid office tables, desks, and custom furniture solutions. Quality craftsmanship, modern designs, affordable prices.",
+  description = "TableLK - Premium office tables, desks & custom furniture in Sri Lanka. Quality craftsmanship, modern designs, affordable prices. Order now!",
   keywords = "table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture",
   ogImage = "/lovable-uploads/e7511338-4de1-4aea-a3be-10f3a6b41823.png",
   canonical

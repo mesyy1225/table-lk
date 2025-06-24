@@ -13,7 +13,7 @@ const Shop: React.FC = () => {
     <Layout>
       <SEOHead 
         title="Shop Office Tables & Furniture Online - TableLK Sri Lanka"
-        description="Browse and buy premium office tables, desks, and furniture online at TableLK. Wide selection of modern and custom furniture with island-wide delivery in Sri Lanka. WhatsApp +94 76 902 7347 for instant support."
+        description="Buy premium office tables & furniture online at TableLK. Modern desks, custom furniture with island-wide delivery in Sri Lanka. WhatsApp support!"
         keywords="buy table online Sri Lanka, office table price, desk for sale, furniture shop, online furniture store, TableLK shop, hybrid table, ergonomic desk, custom table order"
         canonical="https://tablelk.com/shop"
       />
