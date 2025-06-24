@@ -7,7 +7,7 @@ const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
-  const whatsappNumber = "940769027347"; // Sri Lankan number from footer
+  const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
   const handleWhatsAppClick = (messageType: string) => {
     let message = "";
