@@ -1,15 +1,15 @@
-
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductById } from "@/lib/data";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { Minus, Plus, ShoppingCart, Star, Check, Info } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Star, Check, Info, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import BuyNowForm from "@/components/BuyNowForm";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +19,7 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
+  const [isBuyNowOpen, setIsBuyNowOpen] = useState(false);
 
   const productId = parseInt(id || "0");
   const product = getProductById(productId);
@@ -196,15 +197,29 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
             
-            <Button 
-              size="lg" 
-              onClick={handleAddToCart} 
-              disabled={!product.inStock}
-              className="w-full mb-4 text-base"
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Add to Cart
-            </Button>
+            {/* Action Buttons */}
+            <div className="space-y-3 mb-4">
+              <Button 
+                size="lg" 
+                onClick={() => setIsBuyNowOpen(true)}
+                disabled={!product.inStock}
+                className="w-full text-base bg-green-600 hover:bg-green-700"
+              >
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                Buy Now
+              </Button>
+              
+              <Button 
+                size="lg" 
+                onClick={handleAddToCart} 
+                disabled={!product.inStock}
+                variant="outline"
+                className="w-full text-base"
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Add to Cart
+              </Button>
+            </div>
             
             <div className="mt-8">
               <h3 className="text-sm font-semibold mb-2">Categories</h3>
@@ -265,6 +280,13 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Buy Now Form Modal */}
+      <BuyNowForm 
+        product={product}
+        isOpen={isBuyNowOpen}
+        onClose={() => setIsBuyNowOpen(false)}
+      />
     </Layout>
   );
 };
