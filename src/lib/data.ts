@@ -41,8 +41,8 @@ const productDescription = `Made with high-quality melamine table, designed for 
 Features:
 ✔ Sturdy & Durable – Made from premium 15mm melamine-coated particleboard for a smooth, scratch-resistant surface.
 ✔ Modern Design – Available in White, American Ash White, Black, and Teak finishes to match any décor.
-✔ Easy to Clean – Resistant to stains, moisture, and everyday wear.
-✔ Multi-Purpose Use – Ideal for dining, workstations, study desks, conference rooms, and more.
+✔ Easy to Clean – Resistant to stains and everyday wear.
+✔ Multi-Purpose Use – Ideal for offices, workstations, study desks, conference rooms, and more.
 ✔ Customizable Sizes – Various dimensions available to suit your needs.
 
 COLOURS:
@@ -51,7 +51,7 @@ COLOURS:
 ⚫ Black 
 🟤 Teak
 
-💳 Cash on Delivery (COD) Available!`;
+💳 Free Delivery (COD) Available!`;
 
 const tableColors = ["White", "American Ash White", "Black", "Teak"];
 
