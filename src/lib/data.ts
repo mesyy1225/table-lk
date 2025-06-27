@@ -63,11 +63,11 @@ export const products: Product[] = [
     description: productDescription,
     price: 18200,
     images: [
-      "https://i.ibb.co/gMcKWyFk/elegance-dining-1.jpg",
-      "https://i.ibb.co/Mkpp82D7/elegance-dining-2.jpg",
-      "https://i.ibb.co/DnMk7x5/elegance-dining-3.jpg",
-      "https://i.ibb.co/p6SVT1Wj/elegance-dining-4.jpg",
-      "https://i.ibb.co/N27prg9D/rustic-dining-1.jpg"
+      "https://u.cubeupload.com/Tablelkk/IMG20250601WA0022.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0009.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250402WA0001.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250501WA0007.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250501WA0006.jpg"
     ],
     categories: ["computer", "Modern", "Office"],
     material: "15mm Melamine Particleboard with Steel Frame",
@@ -106,11 +106,13 @@ export const products: Product[] = [
     description: productDescription,
     price: 16200,
     images: [
-      "https://i.ibb.co/GfhnC8Gy/coffee-table-1.jpg",
-      "https://i.ibb.co/LdHJRGZY/coffee-table-2.jpg",
-      "https://i.ibb.co/HT446tJn/coffee-table-3.jpg",
-      "https://i.ibb.co/MWYyYrn/coffee-table-4.jpg",
-      "https://i.ibb.co/yFbZFP3C/coffee-table-5.jpg"
+      "https://u.cubeupload.com/Tablelkk/IMG20250606WA0017.jpg",
+      "https://u.cubeupload.com/Tablelkk/Screenshot2025060516.jpg",
+      "https://u.cubeupload.com/Tablelkk/20250321115351.jpg",
+      "https://u.cubeupload.com/Tablelkk/1deIMG20250308WA0022.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250308WA0022.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250503WA0012.jpg",
+      "https://u.cubeupload.com/Tablelkk/WhatsAppImage2025031.jpg"
     ],
     categories: ["computer", "Modern", "office Room"],
     material: "15mm Melamine Particleboard with Steel Frame",
@@ -141,10 +143,11 @@ export const products: Product[] = [
     description: productDescription,
     price: 14600,
     images: [
-      "https://i.ibb.co/997VBVdX/desk-1.jpg",
-      "https://i.ibb.co/LXkYMk1S/desk-2.jpg",
-      "https://i.ibb.co/GvWKd096/desk-3.jpg",
-      "https://i.ibb.co/hFkLF0pG/desk-4.jpg"
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0019.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0013.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0021.jpg",
+      "https://u.cubeupload.com/Tablelkk/BusinessSuitecreatio.jpeg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250528WA0022.jpg"
     ],
     categories: ["Office", "Modern", "Desk"],
     material: "15mm Melamine Particleboard with Steel Frame",
@@ -183,10 +186,11 @@ export const products: Product[] = [
     description: productDescription,
     price: 12900,
     images: [
-      "https://images.unsplash.com/photo-1592078615290-033ee584e267?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1581428982868-e410dd047a90?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=958&q=80",
-      "https://images.unsplash.com/photo-1532323544230-7191fd51bc1b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0020.jpg",
+      "https://u.cubeupload.com/Tablelkk/545IMG20250120WA0012.jpg",
+      "https://u.cubeupload.com/Tablelkk/VideoCapture20250514.jpg",
+      "https://u.cubeupload.com/Tablelkk/20250321121437.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0019.jpg"
     ],
     categories: ["office", "Modern", "Living Room"],
     material: "15mm Melamine Particleboard with Steel Frame",
@@ -225,9 +229,12 @@ export const products: Product[] = [
     description: productDescription,
     price: 22000,
     images: [
-      "https://images.unsplash.com/photo-1519974719765-e6559eac2575?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1577140917170-285929fb55b7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1457&q=80",
-      "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+      "https://u.cubeupload.com/Tablelkk/IMG20250409WA0003.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0011.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250120WA0008.jpg",
+      "https://u.cubeupload.com/Tablelkk/9b7WhatsAppImage2025031.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250514WA0006.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250311WA0003.jpg"
     ],
     categories: ["Conference", "Modern", "Office"],
     material: "15mm Melamine Particleboard with Steel Frame",
@@ -258,9 +265,12 @@ export const products: Product[] = [
     description: productDescription,
     price: 16500,
     images: [
-      "https://images.unsplash.com/photo-1631455853929-ba06397f9a69?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1097&q=80",
-      "https://images.unsplash.com/photo-1601590384651-c3aca464b059?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0004.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0002.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0003.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0010.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0008.jpg",
+      "https://u.cubeupload.com/Tablelkk/IMG20250330WA0013.jpg"
     ],
     categories: ["dining Table", "Modern", "Living Room"],
     material: "15mm Melamine Particleboard with Steel Frame",

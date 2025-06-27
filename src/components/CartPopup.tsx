@@ -44,7 +44,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ isOpen, onClose }) => {
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <ShoppingBag className="mr-2 h-5 w-5" />
-              Your Cart {authState.isAuthenticated && "(Synced)"}
+              Your Cart {authState.isAuthenticated && ""}
             </SheetTitle>
             <SheetDescription>
               Review your items before checkout

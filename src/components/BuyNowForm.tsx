@@ -71,7 +71,7 @@ Name: ${formData.name}
 ---
 Order placed via TableLK.com`;
 
-    const whatsappNumber = "94768919013";
+    const whatsappNumber = "94704613204";
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
     
