@@ -254,7 +254,7 @@ export const products: Product[] = [
   {
     id: 6,
     name: "Modern Dining Table",
-    shortDescription: "Modern melamine side table with steel frame",
+    shortDescription: "Modern melamine dining table with steel frame",
     description: productDescription,
     price: 16500,
     images: [
