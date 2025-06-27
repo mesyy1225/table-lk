@@ -51,7 +51,7 @@ COLOURS:
 ⚫ Black 
 🟤 Teak
 
-💳 Free Delivery (COD) Available!`;
+💳 Free Islandwide Delivery (COD) Available!`;
 
 const tableColors = ["White", "American Ash White", "Black", "Teak"];
 
