@@ -48,17 +48,22 @@ const BuyNowForm: React.FC<BuyNowFormProps> = ({ product, isOpen, onClose }) => 
     const message = `🛒 NEW ORDER REQUEST
     
 📦 Product: ${product.name}
+
 💰 Unit Price: ${formatPrice(product.price)}
+
 📊 Quantity: ${formData.quantity}
+
 💵 Total Price: ${formatPrice(totalPrice)}
 
 🎨 Selected Color: ${formData.selectedColor}
+
 📏 Size: ${product.dimensions.width}" x ${product.dimensions.length}" x ${product.dimensions.height}"
-🔧 Material: ${product.material}
 
 👤 CUSTOMER DETAILS:
 Name: ${formData.name}
+
 📍 Address: ${formData.address}
+
 📞 Contact: ${formData.contactNumber}
 
 💬 Remarks: ${formData.remarks || 'None'}
