@@ -14,6 +14,18 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import WhatsAppBubble from "./components/WhatsAppBubble";
+import BotpressInjector from "./components/BotpressInjector";
+
+function App() {
+  return (
+    <>
+      <BotpressInjector />
+      <WhatsAppBubble />
+    </>
+  );
+}
+
 
 const queryClient = new QueryClient();
 
