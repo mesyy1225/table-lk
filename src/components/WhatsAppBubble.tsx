@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Webchat } from '@botpress/webchat';
+// Temporarily disabled due to React context issues
+// import { Webchat } from '@botpress/webchat';
 
 const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
 
@@ -102,29 +103,40 @@ const WhatsAppBubble: React.FC = () => {
           )}
         </AnimatePresence>
         
-        {/* Botpress Webchat */}
-        <div
-          style={{
-            display: isWebchatOpen ? 'block' : 'none',
-            position: 'fixed',
-            bottom: '80px',
-            right: '24px',
-            zIndex: 1000,
-            width: '400px',
-            height: '600px'
-          }}
-        >
-          <Webchat 
-            clientId={clientId}
-            style={{ 
-              width: '100%', 
-              height: '100%',
-              border: 'none',
+        {/* Temporary chatbot placeholder - Botpress integration needs fixing */}
+        {isWebchatOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '80px',
+              right: '24px',
+              zIndex: 1000,
+              width: '400px',
+              height: '600px',
+              backgroundColor: 'white',
               borderRadius: '12px',
-              boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3)'
+              boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3)',
+              border: '1px solid #e5e7eb',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px'
             }}
-          />
-        </div>
+          >
+            <Bot size={48} className="text-purple-600 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">AI Assistant</h3>
+            <p className="text-sm text-gray-600 text-center mb-4">
+              Chatbot integration is being set up. Please use WhatsApp for now.
+            </p>
+            <button
+              onClick={() => setIsWebchatOpen(false)}
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        )}
         
         <motion.button
           whileHover={{ scale: 1.1 }}
