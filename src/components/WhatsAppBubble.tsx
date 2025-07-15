@@ -2,18 +2,9 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Webchat,
-  WebchatProvider,
-  getClient,
-  Configuration,
-} from '@botpress/webchat';
+import { Webchat } from '@botpress/webchat';
 
 const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
-
-const configuration: Configuration = {
-  color: '#000',
-};
 
 const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,10 +13,6 @@ const WhatsAppBubble: React.FC = () => {
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
-  const client = getClient({
-    clientId,
-  });
-
   const toggleWebchat = () => {
     setIsWebchatOpen((prevState) => !prevState);
     setIsExpanded(false); // Close the options menu when opening webchat
@@ -56,8 +43,7 @@ const WhatsAppBubble: React.FC = () => {
   };
 
   return (
-    <WebchatProvider client={client} configuration={configuration}>
-      <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50">
         <AnimatePresence>
           {isExpanded && (
             <motion.div
@@ -126,7 +112,7 @@ const WhatsAppBubble: React.FC = () => {
             zIndex: 1000,
           }}
         >
-          <Webchat />
+          <Webchat clientId={clientId} />
         </div>
         
         <motion.button
@@ -139,7 +125,6 @@ const WhatsAppBubble: React.FC = () => {
           <MessageCircle size={24} />
         </motion.button>
       </div>
-    </WebchatProvider>
   );
 };
 
