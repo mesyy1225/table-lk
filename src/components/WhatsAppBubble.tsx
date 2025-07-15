@@ -1,13 +1,35 @@
 
 import React, { useState } from 'react';
-import { MessageCircle, X } from 'lucide-react';
+import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Webchat,
+  WebchatProvider,
+  getClient,
+  Configuration,
+} from '@botpress/webchat';
+
+const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
+
+const configuration: Configuration = {
+  color: '#000',
+};
 
 const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
+  
+  const client = getClient({
+    clientId,
+  });
+
+  const toggleWebchat = () => {
+    setIsWebchatOpen((prevState) => !prevState);
+    setIsExpanded(false); // Close the options menu when opening webchat
+  };
   
   const handleWhatsAppClick = (messageType: string) => {
     let message = "";
@@ -34,64 +56,90 @@ const WhatsAppBubble: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="mb-4 bg-white rounded-lg shadow-lg border p-4 w-72"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-800">Contact us on WhatsApp</h3>
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            
-            <div className="space-y-2">
-              <button
-                onClick={() => handleWhatsAppClick("product_inquiry")}
-                className="w-full text-left p-3 rounded-md bg-green-50 hover:bg-green-100 transition-colors border border-green-200"
-              >
-                <div className="font-medium text-green-800">Product Inquiry</div>
-                <div className="text-sm text-green-600">Ask about our furniture</div>
-              </button>
+    <WebchatProvider client={client} configuration={configuration}>
+      <div className="fixed bottom-6 right-6 z-50">
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              className="mb-4 bg-white rounded-lg shadow-lg border p-4 w-72"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-gray-800">Contact Options</h3>
+                <button
+                  onClick={() => setIsExpanded(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
               
-              <button
-                onClick={() => handleWhatsAppClick("custom_order")}
-                className="w-full text-left p-3 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200"
-              >
-                <div className="font-medium text-blue-800">Custom Order</div>
-                <div className="text-sm text-blue-600">Place a custom order</div>
-              </button>
-              
-              <button
-                onClick={() => handleWhatsAppClick("general")}
-                className="w-full text-left p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200"
-              >
-                <div className="font-medium text-gray-800">General Question</div>
-                <div className="text-sm text-gray-600">Other inquiries</div>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-colors"
-        aria-label="WhatsApp Chat"
-      >
-        <MessageCircle size={24} />
-      </motion.button>
-    </div>
+              <div className="space-y-2">
+                <button
+                  onClick={toggleWebchat}
+                  className="w-full text-left p-3 rounded-md bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
+                >
+                  <div className="font-medium text-purple-800 flex items-center">
+                    <Bot size={16} className="mr-2" />
+                    AI Chat Assistant
+                  </div>
+                  <div className="text-sm text-purple-600">Get instant help from our AI</div>
+                </button>
+                
+                <button
+                  onClick={() => handleWhatsAppClick("product_inquiry")}
+                  className="w-full text-left p-3 rounded-md bg-green-50 hover:bg-green-100 transition-colors border border-green-200"
+                >
+                  <div className="font-medium text-green-800">Product Inquiry</div>
+                  <div className="text-sm text-green-600">Ask about our furniture</div>
+                </button>
+                
+                <button
+                  onClick={() => handleWhatsAppClick("custom_order")}
+                  className="w-full text-left p-3 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200"
+                >
+                  <div className="font-medium text-blue-800">Custom Order</div>
+                  <div className="text-sm text-blue-600">Place a custom order</div>
+                </button>
+                
+                <button
+                  onClick={() => handleWhatsAppClick("general")}
+                  className="w-full text-left p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200"
+                >
+                  <div className="font-medium text-gray-800">General Question</div>
+                  <div className="text-sm text-gray-600">Other inquiries</div>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Botpress Webchat */}
+        <div
+          style={{
+            display: isWebchatOpen ? 'block' : 'none',
+            position: 'fixed',
+            bottom: '80px',
+            right: '24px',
+            zIndex: 1000,
+          }}
+        >
+          <Webchat />
+        </div>
+        
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-colors"
+          aria-label="Contact Options"
+        >
+          <MessageCircle size={24} />
+        </motion.button>
+      </div>
+    </WebchatProvider>
   );
 };
 
