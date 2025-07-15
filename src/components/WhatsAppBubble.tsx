@@ -9,12 +9,21 @@ const WhatsAppBubble: React.FC = () => {
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
   const toggleWebchat = () => {
-    // Use the global Botpress webchat
-    if (typeof window !== 'undefined' && (window as any).botpressWebChat) {
-      (window as any).botpressWebChat.toggle();
+  const webchat = document.getElementById("webchat");
+  if (!webchat) return;
+
+  const isHidden = webchat.style.display === "none";
+  webchat.style.display = isHidden ? "block" : "none";
+
+  if (typeof window !== "undefined" && (window as any).botpress) {
+    if (isHidden) {
+      (window as any).botpress.sendEvent({ type: "show" });
+    } else {
+      (window as any).botpress.sendEvent({ type: "hide" });
     }
-    setIsExpanded(false);
-  };
+  }
+};
+
   
   const handleWhatsAppClick = (messageType: string) => {
     let message = "";
