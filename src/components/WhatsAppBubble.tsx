@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Webchat } from '@botpress/webchat';
+// import { Webchat } from '@botpress/webchat';
 
 const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
 
@@ -63,6 +63,8 @@ const WhatsAppBubble: React.FC = () => {
               </div>
               
               <div className="space-y-2">
+                {/* Temporarily disabled until Botpress is properly configured */}
+                {/*
                 <button
                   onClick={toggleWebchat}
                   className="w-full text-left p-3 rounded-md bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
@@ -73,6 +75,7 @@ const WhatsAppBubble: React.FC = () => {
                   </div>
                   <div className="text-sm text-purple-600">Get instant help from our AI</div>
                 </button>
+                */}
                 
                 <button
                   onClick={() => handleWhatsAppClick("product_inquiry")}
@@ -102,7 +105,8 @@ const WhatsAppBubble: React.FC = () => {
           )}
         </AnimatePresence>
         
-        {/* Botpress Webchat */}
+        {/* Botpress Webchat - Temporarily disabled */}
+        {/*
         <div
           style={{
             display: isWebchatOpen ? 'block' : 'none',
@@ -114,6 +118,7 @@ const WhatsAppBubble: React.FC = () => {
         >
           <Webchat clientId={clientId} />
         </div>
+        */}
         
         <motion.button
           whileHover={{ scale: 1.1 }}
