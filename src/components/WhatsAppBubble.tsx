@@ -1,21 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface WhatsAppBubbleProps {
-  onToggleBotpress?: () => void;
-}
-
-const WhatsAppBubble: React.FC<WhatsAppBubbleProps> = ({ onToggleBotpress }) => {
+const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isBotpressLoaded, setIsBotpressLoaded] = useState(false);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
-  const handleBotpressClick = () => {
-    if (onToggleBotpress) {
-      onToggleBotpress();
+  useEffect(() => {
+    // Check if Botpress is loaded
+    const checkBotpress = () => {
+      if (typeof window !== 'undefined' && (window as any).botpressWebChat) {
+        setIsBotpressLoaded(true);
+      } else {
+        setTimeout(checkBotpress, 500);
+      }
+    };
+    
+    checkBotpress();
+  }, []);
+  
+  const toggleBotpress = () => {
+    if (!isBotpressLoaded) {
+      console.log("Botpress not loaded yet");
+      return;
     }
+
+    try {
+      if (typeof window !== 'undefined' && (window as any).botpressWebChat) {
+        const webchat = (window as any).botpressWebChat;
+        
+        // Toggle the webchat
+        if (webchat.isOpen) {
+          webchat.close();
+        } else {
+          webchat.open();
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling Botpress:", error);
+    }
+    
     setIsExpanded(false);
   };
   
@@ -65,14 +92,25 @@ const WhatsAppBubble: React.FC<WhatsAppBubbleProps> = ({ onToggleBotpress }) => 
             
             <div className="space-y-2">
               <button
-                onClick={handleBotpressClick}
-                className="w-full text-left p-3 rounded-md bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
+                onClick={toggleBotpress}
+                className={`w-full text-left p-3 rounded-md transition-colors border ${
+                  isBotpressLoaded 
+                    ? 'bg-purple-50 hover:bg-purple-100 border-purple-200' 
+                    : 'bg-gray-50 border-gray-200 cursor-not-allowed'
+                }`}
+                disabled={!isBotpressLoaded}
               >
-                <div className="font-medium text-purple-800 flex items-center">
+                <div className={`font-medium flex items-center ${
+                  isBotpressLoaded ? 'text-purple-800' : 'text-gray-500'
+                }`}>
                   <Bot size={16} className="mr-2" />
                   AI Chat Assistant
                 </div>
-                <div className="text-sm text-purple-600">Get instant help from our AI</div>
+                <div className={`text-sm ${
+                  isBotpressLoaded ? 'text-purple-600' : 'text-gray-400'
+                }`}>
+                  {isBotpressLoaded ? 'Get instant help from our AI' : 'Loading...'}
+                </div>
               </button>
               
               <button
