@@ -1,21 +1,48 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Webchat } from '@botpress/webchat';
 
+// Lazy load the Webchat component to avoid React context issues
+const LazyWebchat = lazy(() => 
+  import('@botpress/webchat').then(module => ({ 
+    default: ({ clientId, ...props }: any) => (
+      <module.Webchat clientId={clientId} {...props} />
+    )
+  })).catch(() => ({
+    // Fallback component if import fails
+    default: () => (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <Bot size={48} className="text-purple-600 mb-4 mx-auto" />
+          <p className="text-sm text-gray-600">
+            Chat temporarily unavailable. Please use WhatsApp.
+          </p>
+        </div>
+      </div>
+    )
+  }))
+);
 const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
 
 const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isWebchatOpen, setIsWebchatOpen] = useState(false);
+  const [isWebchatReady, setIsWebchatReady] = useState(false);
+
+  // Only allow webchat to open after component is mounted
+  useEffect(() => {
+    setIsWebchatReady(true);
+  }, []);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
   const toggleWebchat = () => {
-    setIsWebchatOpen((prevState) => !prevState);
-    setIsExpanded(false); // Close the options menu when opening webchat
+    if (isWebchatReady) {
+      setIsWebchatOpen((prevState) => !prevState);
+      setIsExpanded(false); // Close the options menu when opening webchat
+    }
   };
   
   const handleWhatsAppClick = (messageType: string) => {
@@ -102,29 +129,47 @@ const WhatsAppBubble: React.FC = () => {
           )}
         </AnimatePresence>
         
-        {/* Botpress Webchat */}
-        <div
-          style={{
-            display: isWebchatOpen ? 'block' : 'none',
-            position: 'fixed',
-            bottom: '80px',
-            right: '24px',
-            zIndex: 1000,
-            width: '400px',
-            height: '600px'
-          }}
-        >
-          <Webchat 
-            clientId={clientId}
-            style={{ 
-              width: '100%', 
-              height: '100%',
-              border: 'none',
-              borderRadius: '12px',
-              boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3)'
+        {/* Botpress Webchat - Only render when ready and open */}
+        {isWebchatOpen && isWebchatReady && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '80px',
+              right: '24px',
+              zIndex: 1000,
+              width: '400px',
+              height: '600px'
             }}
-          />
-        </div>
+          >
+            <Suspense 
+              fallback={
+                <div 
+                  className="w-full h-full bg-white rounded-lg shadow-lg border flex items-center justify-center"
+                  style={{
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3)'
+                  }}
+                >
+                  <div className="text-center">
+                    <Bot size={32} className="text-purple-600 mb-2 mx-auto animate-pulse" />
+                    <p className="text-sm text-gray-600">Loading chat...</p>
+                  </div>
+                </div>
+              }
+            >
+              <LazyWebchat 
+                clientId={clientId}
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3)'
+                }}
+              />
+            </Suspense>
+          </div>
+        )}
         
         <motion.button
           whileHover={{ scale: 1.1 }}
