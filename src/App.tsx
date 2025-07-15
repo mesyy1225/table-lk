@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,10 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// ✅ Import the chatbot and chat bubble
+import BotpressInjector from "./components/BotpressInjector";
+import WhatsAppBubble from "./components/WhatsAppBubble";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,6 +27,10 @@ const App = () => (
         <CartProvider>
           <Toaster />
           <Sonner />
+          {/* ✅ Botpress and WhatsApp Chat Bubble (global UI elements) */}
+          <BotpressInjector />
+          <WhatsAppBubble />
+
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -33,7 +40,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              {/* CATCH-ALL ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
