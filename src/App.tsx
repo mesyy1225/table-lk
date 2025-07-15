@@ -14,9 +14,8 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// ✅ Import the chatbot and chat bubble
-import BotpressInjector from "./components/BotpressInjector";
-import WhatsAppBubble from "./components/WhatsAppBubble";
+// ✅ Import the integrated chat system
+import IntegratedChatSystem from "./components/IntegratedChatSystem";
 
 const queryClient = new QueryClient();
 
@@ -27,10 +26,7 @@ const App = () => (
         <CartProvider>
           <Toaster />
           <Sonner />
-          {/* ✅ Botpress and WhatsApp Chat Bubble (global UI elements) */}
-          <BotpressInjector />
-          <WhatsAppBubble />
-
+          
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -44,6 +40,9 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+
+          {/* ✅ Integrated chat system with both Botpress and WhatsApp */}
+          <IntegratedChatSystem />
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>

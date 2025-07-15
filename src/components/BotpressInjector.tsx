@@ -1,41 +1,48 @@
-import { useEffect } from "react";
+import { useState } from 'react';
+import {
+  Webchat,
+  WebchatProvider,
+  Fab,
+  getClient,
+  Configuration,
+} from '@botpress/webchat';
 
 const BotpressInjector = () => {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.botpress.cloud/webchat/v3.0/inject.js";
-    script.async = true;
+  const clientId = "096cf593-52f6-4f4d-8ed5-39799374e42e";
+  
+  const configuration: Configuration = {
+    color: '#000',
+    // You can add more configuration options here
+    // botName: "TableLK Support Agent",
+    // botAvatar: "https://files.bpcontent.cloud/2025/07/15/05/20250715051212-IXILKPY9.png",
+    // themeName: "prism",
+    // theme: "light",
+  };
 
-    const configScript = document.createElement("script");
-    configScript.innerHTML = `
-      window.botpressWebChat.init({
-        botId: "ae58d3f8-5e51-49b9-80f5-d9ce62abec6e",
-        clientId: "096cf593-52f6-4f4d-8ed5-39799374e42e",
-        selector: "#webchat",
-        botName: "TableLK Support Agent",
-        botAvatar: "https://files.bpcontent.cloud/2025/07/15/05/20250715051212-IXILKPY9.png",
-        themeName: "prism",
-        theme: "light",
-        useSessionStorage: true,
-        enableConversationDeletion: true,
-        enableReset: true
-      });
+  const client = getClient({
+    clientId,
+  });
 
-      window.botpressWebChat.on("webchat:ready", () => {
-        console.log("✅ Botpress Webchat Ready");
-      });
-    `;
+  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
 
-    document.body.appendChild(script);
-    document.body.appendChild(configScript);
+  const toggleWebchat = () => {
+    setIsWebchatOpen((prevState) => !prevState);
+  };
 
-    return () => {
-      document.body.removeChild(script);
-      document.body.removeChild(configScript);
-    };
-  }, []);
-
-  return null;
+  return (
+    <div className="fixed bottom-6 left-6 z-40">
+      <WebchatProvider client={client} configuration={configuration}>
+        <Fab onClick={toggleWebchat} />
+        <div
+          style={{
+            display: isWebchatOpen ? 'block' : 'none',
+          }}
+        >
+          <Webchat />
+        </div>
+      </WebchatProvider>
+    </div>
+  );
 };
 
 export default BotpressInjector;

@@ -2,28 +2,22 @@ import React, { useState } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const WhatsAppBubble: React.FC = () => {
+interface WhatsAppBubbleProps {
+  onToggleBotpress?: () => void;
+}
+
+const WhatsAppBubble: React.FC<WhatsAppBubbleProps> = ({ onToggleBotpress }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
   const whatsappNumber = "94768919013"; // Sri Lankan number from footer
   
-  const toggleWebchat = () => {
-  const webchat = document.getElementById("webchat");
-  if (!webchat) return;
-
-  const isHidden = webchat.style.display === "none";
-  webchat.style.display = isHidden ? "block" : "none";
-
-  if (typeof window !== "undefined" && (window as any).botpress) {
-    if (isHidden) {
-      (window as any).botpress.sendEvent({ type: "show" });
-    } else {
-      (window as any).botpress.sendEvent({ type: "hide" });
+  const handleBotpressClick = () => {
+    if (onToggleBotpress) {
+      onToggleBotpress();
     }
-  }
-};
-
+    setIsExpanded(false);
+  };
   
   const handleWhatsAppClick = (messageType: string) => {
     let message = "";
@@ -71,7 +65,7 @@ const WhatsAppBubble: React.FC = () => {
             
             <div className="space-y-2">
               <button
-                onClick={toggleWebchat}
+                onClick={handleBotpressClick}
                 className="w-full text-left p-3 rounded-md bg-purple-50 hover:bg-purple-100 transition-colors border border-purple-200"
               >
                 <div className="font-medium text-purple-800 flex items-center">
