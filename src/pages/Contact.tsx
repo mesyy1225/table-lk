@@ -107,7 +107,7 @@ const Contact: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Address</h3>
-                      <p className="text-muted-foreground mt-1">TableLK Furniture, Maragahahena, Thalgahawila Road, Kudauduwa, Horana, Horana, Sri Lanka.</p>
+                      <p className="text-muted-foreground mt-1">TableLK Furniture, No. 31/A/02, Gammanpila, Bandaragama, Sri Lanka.</p>
                     </div>
                   </div>
 
