@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <MapPin size={18} className="mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80">TableLK Furniture, Maragahahena, Thalgahawila Road, Kudauduwa, Horana, Sri Lanka.</span>
+                <span className="text-primary-foreground/80">TableLK Furniture, No. 31/A/02, Gammanpila, Bandaragama, Sri Lanka.</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone size={18} className="flex-shrink-0" />
