@@ -212,6 +212,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        if (error.status === 429 || error.message?.includes('rate limit')) {
+          throw new Error("Too many signup attempts. Please wait a few minutes before trying again.");
+        }
         throw error;
       }
 
