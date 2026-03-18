@@ -180,7 +180,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         dispatch({ type: "SET_LOADING", payload: true });
         
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('user_cart_items')
           .select('*')
           .eq('user_id', authState.user.id);
