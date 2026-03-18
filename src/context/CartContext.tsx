@@ -180,7 +180,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         dispatch({ type: "SET_LOADING", payload: true });
         
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('user_cart_items')
           .select('*')
           .eq('user_id', authState.user.id);
@@ -242,7 +242,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       // First, delete all existing cart items for this user
-      await supabase
+      await (supabase as any)
         .from('user_cart_items')
         .delete()
         .eq('user_id', authState.user.id);
@@ -255,7 +255,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           quantity: item.quantity
         }));
         
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_cart_items')
           .insert(cartItemsToInsert);
           
