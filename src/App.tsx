@@ -20,6 +20,7 @@ import WhatsAppBubble from "./components/WhatsAppBubble";
 
 const queryClient = new QueryClient();
 
+// App component with proper provider nesting
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
