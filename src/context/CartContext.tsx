@@ -255,7 +255,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           quantity: item.quantity
         }));
         
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_cart_items')
           .insert(cartItemsToInsert);
           
