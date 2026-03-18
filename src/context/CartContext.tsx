@@ -242,7 +242,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       // First, delete all existing cart items for this user
-      await supabase
+      await (supabase as any)
         .from('user_cart_items')
         .delete()
         .eq('user_id', authState.user.id);
