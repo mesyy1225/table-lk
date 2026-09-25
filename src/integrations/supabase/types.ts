@@ -61,38 +61,59 @@ export type Database = {
       }
       products: {
         Row: {
+          categories: string[]
           category: string | null
+          colors: string[]
           created_at: string
           description: string | null
+          dimensions: Json
           featured: boolean
           id: string
           image_url: string | null
+          images: string[]
+          material: string | null
           name: string
           price: number
+          short_description: string | null
+          sort_order: number
           stock: number
           updated_at: string
         }
         Insert: {
+          categories?: string[]
           category?: string | null
+          colors?: string[]
           created_at?: string
           description?: string | null
+          dimensions?: Json
           featured?: boolean
           id?: string
           image_url?: string | null
+          images?: string[]
+          material?: string | null
           name: string
           price?: number
+          short_description?: string | null
+          sort_order?: number
           stock?: number
           updated_at?: string
         }
         Update: {
+          categories?: string[]
           category?: string | null
+          colors?: string[]
           created_at?: string
           description?: string | null
+          dimensions?: Json
           featured?: boolean
           id?: string
           image_url?: string | null
+          images?: string[]
+          material?: string | null
           name?: string
           price?: number
+          short_description?: string | null
+          sort_order?: number
           stock?: number
           updated_at?: string
         }
@@ -147,21 +168,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          product_id: number
+          product_id: string
           quantity: number
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          product_id: number
+          product_id: string
           quantity?: number
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          product_id?: number
+          product_id?: string
           quantity?: number
           user_id?: string
         }
