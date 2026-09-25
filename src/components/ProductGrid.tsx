@@ -24,7 +24,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const allCategories = getAllCategories(products);
-  const allMaterials = getAllMaterials();
+  const allMaterials = getAllMaterials(products);
 
   useEffect(() => {
     let result = [...products];

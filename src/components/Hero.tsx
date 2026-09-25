@@ -1,3 +1,4 @@
+import { useSiteContent } from "@/hooks/useSiteContent";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -7,6 +8,9 @@ import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 // Updated slideshow images with better furniture images
 const slideImages = ["https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80", "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=958&q=80", "https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"];
 const Hero: React.FC = () => {
+  const { get } = useSiteContent();
+  const heroTitle = get("hero_title", "Elegance in Every Detail");
+  const heroSubtitle = get("hero_subtitle", "Each TableLK creation is a masterpiece, crafted with premium materials and meticulous attention to detail.");
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, {
@@ -89,12 +93,11 @@ const Hero: React.FC = () => {
           <motion.div variants={itemVariants} className="inline-block mb-3 text-sm font-semibold tracking-wider uppercase bg-primary/30 backdrop-blur-sm px-3 py-1 rounded-full text-primary-foreground/90">CRAFTED FOR COMFORT</motion.div>
           
           <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight mb-6">
-            Elegance in <br />
-            Every Detail
+            {heroTitle}
           </motion.h1>
           
           <motion.p variants={itemVariants} className="text-lg md:text-xl text-white/90 mb-8 max-w-xl">
-            Each TableLK creation is a masterpiece, crafted with premium materials and meticulous attention to detail.
+            {heroSubtitle}
           </motion.p>
           
           <motion.div variants={itemVariants} className="flex flex-wrap gap-4">

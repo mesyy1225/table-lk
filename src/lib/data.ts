@@ -338,10 +338,10 @@ export const getAllCategories = (list: Product[] = products): string[] => {
   return Array.from(categories).sort();
 };
 
-export const getAllMaterials = (): string[] => {
+export const getAllMaterials = (list: Product[] = products): string[] => {
   const materials = new Set<string>();
-  products.forEach(product => {
-    materials.add(product.material);
+  list.forEach(product => {
+    if (product.material) materials.add(product.material);
   });
   return Array.from(materials).sort();
 };
