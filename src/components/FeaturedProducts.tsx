@@ -1,14 +1,15 @@
 
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { getFeaturedProducts } from "@/lib/data";
+import { useProducts } from "@/hooks/useProducts";
 import ProductCard from "./ProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion, useAnimation, useInView } from "framer-motion";
 
 const FeaturedProducts: React.FC = () => {
-  const featuredProducts = getFeaturedProducts();
+  const { data: allProducts = [] } = useProducts();
+  const featuredProducts = allProducts.filter((p) => p.featured);
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
