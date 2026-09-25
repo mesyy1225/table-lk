@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductById } from "@/lib/data";
+import { useProduct } from "@/hooks/useProducts";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
@@ -21,12 +21,19 @@ const ProductDetail: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
   const [isBuyNowOpen, setIsBuyNowOpen] = useState(false);
 
-  const productId = parseInt(id || "0");
-  const product = getProductById(productId);
+  const { product, isLoading } = useProduct(id);
 
   const formatPrice = (price: number) => {
     return `LKR ${price.toLocaleString('en-LK')}`;
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-6 py-20 text-center text-muted-foreground">Loading...</div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (

@@ -19,8 +19,8 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD_ITEM"; payload: { product: Product; quantity: number } }
-  | { type: "REMOVE_ITEM"; payload: { productId: number } }
-  | { type: "UPDATE_QUANTITY"; payload: { productId: number; quantity: number } }
+  | { type: "REMOVE_ITEM"; payload: { productId: Product["id"] } }
+  | { type: "UPDATE_QUANTITY"; payload: { productId: Product["id"]; quantity: number } }
   | { type: "CLEAR_CART" }
   | { type: "SET_CART"; payload: { items: CartItem[] } }
   | { type: "SET_LOADING"; payload: boolean };
@@ -28,8 +28,8 @@ type CartAction =
 interface CartContextProps {
   state: CartState;
   addToCart: (product: Product, quantity: number) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeFromCart: (productId: Product["id"]) => void;
+  updateQuantity: (productId: Product["id"], quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -195,7 +195,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const product = { id: item.product_id } as Product;
             
             // Find the complete product details from local data
-            const foundProduct = window.products?.find(p => p.id === item.product_id);
+            const foundProduct = window.products?.find(p => String(p.id) === String(item.product_id));
             
             return {
               product: foundProduct || product,
@@ -292,7 +292,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.success(`Added ${product.name} to cart`);
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: Product["id"]) => {
     dispatch({ type: "REMOVE_ITEM", payload: { productId } });
     
     // If user is authenticated, sync cart to Supabase
@@ -304,7 +304,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.info("Item removed from cart");
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: Product["id"], quantity: number) => {
     dispatch({ type: "UPDATE_QUANTITY", payload: { productId, quantity } });
     
     // If user is authenticated, sync cart to Supabase

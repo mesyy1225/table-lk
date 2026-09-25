@@ -1,3 +1,4 @@
+import { saveOrder } from "@/lib/saveOrder";
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -65,6 +66,15 @@ Name: ${formData.name}
 
 ---
 Order placed via TableLK.com`;
+
+    saveOrder({
+      customer_name: formData.name,
+      customer_phone: formData.contactNumber,
+      shipping_address: formData.address,
+      notes: formData.remarks,
+      total: state.totalPrice,
+      items: state.items.map(i => ({ product_id: i.product.id, name: i.product.name, price: i.product.price, quantity: i.quantity })),
+    });
 
     const whatsappNumber = "94768919013";
     const encodedMessage = encodeURIComponent(message);

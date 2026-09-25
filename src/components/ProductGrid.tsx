@@ -23,8 +23,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const allCategories = getAllCategories();
-  const allMaterials = getAllMaterials();
+  const allCategories = getAllCategories(products);
+  const allMaterials = getAllMaterials(products);
 
   useEffect(() => {
     let result = [...products];

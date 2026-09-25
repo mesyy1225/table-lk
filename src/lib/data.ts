@@ -1,6 +1,6 @@
 
 export interface Product {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   shortDescription: string;
@@ -328,9 +328,9 @@ export const getProductsByPriceRange = (min: number, max: number): Product[] => 
   return products.filter(product => product.price >= min && product.price <= max);
 };
 
-export const getAllCategories = (): string[] => {
+export const getAllCategories = (list: Product[] = products): string[] => {
   const categories = new Set<string>();
-  products.forEach(product => {
+  list.forEach(product => {
     product.categories.forEach(category => {
       categories.add(category);
     });
@@ -338,10 +338,10 @@ export const getAllCategories = (): string[] => {
   return Array.from(categories).sort();
 };
 
-export const getAllMaterials = (): string[] => {
+export const getAllMaterials = (list: Product[] = products): string[] => {
   const materials = new Set<string>();
-  products.forEach(product => {
-    materials.add(product.material);
+  list.forEach(product => {
+    if (product.material) materials.add(product.material);
   });
   return Array.from(materials).sort();
 };

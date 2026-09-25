@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, Upload } from "lucide-react";
 
 interface Product {
@@ -20,6 +21,13 @@ interface Product {
   category: string | null;
   stock: number;
   featured: boolean;
+  short_description: string | null;
+  images: string[];
+  categories: string[];
+  colors: string[];
+  material: string | null;
+  dimensions: { width: number; length: number; height: number };
+  sort_order: number;
 }
 
 const empty: Omit<Product, "id"> = {
@@ -30,9 +38,17 @@ const empty: Omit<Product, "id"> = {
   category: "",
   stock: 0,
   featured: false,
+  short_description: "",
+  images: [],
+  categories: [],
+  colors: [],
+  material: "",
+  dimensions: { width: 0, length: 0, height: 0 },
+  sort_order: 0,
 };
 
 const ProductsManager: React.FC = () => {
+  const queryClient = useQueryClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -71,6 +87,13 @@ const ProductsManager: React.FC = () => {
       category: p.category ?? "",
       stock: p.stock,
       featured: p.featured,
+      short_description: p.short_description ?? "",
+      images: p.images ?? (p.image_url ? [p.image_url] : []),
+      categories: p.categories ?? [],
+      colors: p.colors ?? [],
+      material: p.material ?? "",
+      dimensions: p.dimensions ?? { width: 0, length: 0, height: 0 },
+      sort_order: p.sort_order ?? 0,
     });
     setDialogOpen(true);
   };
@@ -83,7 +106,7 @@ const ProductsManager: React.FC = () => {
       const { error } = await supabase.storage.from("product-images").upload(path, file);
       if (error) throw error;
       const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: data.publicUrl }));
+      setForm((f) => ({ ...f, image_url: f.image_url || data.publicUrl, images: [...f.images, data.publicUrl] }));
       toast.success("Image uploaded");
     } catch (e: any) {
       toast.error(e.message || "Upload failed");
@@ -97,16 +120,18 @@ const ProductsManager: React.FC = () => {
       toast.error("Name is required");
       return;
     }
+    const payload = { ...form, image_url: form.images[0] || form.image_url || null };
     if (editing) {
-      const { error } = await (supabase as any).from("products").update(form).eq("id", editing.id);
+      const { error } = await (supabase as any).from("products").update(payload).eq("id", editing.id);
       if (error) return toast.error(error.message);
       toast.success("Product updated");
     } else {
-      const { error } = await (supabase as any).from("products").insert(form);
+      const { error } = await (supabase as any).from("products").insert(payload);
       if (error) return toast.error(error.message);
       toast.success("Product created");
     }
     setDialogOpen(false);
+    queryClient.invalidateQueries({ queryKey: ["products"] });
     load();
   };
 
@@ -115,6 +140,7 @@ const ProductsManager: React.FC = () => {
     const { error } = await (supabase as any).from("products").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
+    queryClient.invalidateQueries({ queryKey: ["products"] });
     load();
   };
 
@@ -213,6 +239,43 @@ const ProductsManager: React.FC = () => {
                   value={form.stock}
                   onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
                 />
+              </div>
+            </div>
+            <div>
+              <Label>Short description</Label>
+              <Input value={form.short_description ?? ""} onChange={(e) => setForm({ ...form, short_description: e.target.value })} />
+            </div>
+            <div>
+              <Label>Material</Label>
+              <Input value={form.material ?? ""} onChange={(e) => setForm({ ...form, material: e.target.value })} />
+            </div>
+            <div>
+              <Label>Categories (comma separated)</Label>
+              <Input value={form.categories.join(", ")}
+                onChange={(e) => setForm({ ...form, categories: e.target.value.split(",").map((x) => x.trim()).filter(Boolean) })} />
+            </div>
+            <div>
+              <Label>Colours (comma separated)</Label>
+              <Input value={form.colors.join(", ")}
+                onChange={(e) => setForm({ ...form, colors: e.target.value.split(",").map((x) => x.trim()).filter(Boolean) })} />
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {(["width", "length", "height"] as const).map((d) => (
+                <div key={d}>
+                  <Label className="capitalize">{d} (in)</Label>
+                  <Input type="number" value={form.dimensions[d]} onChange={(e) => setForm({ ...form, dimensions: { ...form.dimensions, [d]: Number(e.target.value) } })} />
+                </div>
+              ))}
+              <div>
+                <Label>Display order</Label>
+                <Input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
+              </div>
+            </div>
+            <div>
+              <Label>Photos (one link per line — first is the main photo)</Label>
+              <Textarea rows={4} value={form.images.join("\n")} onChange={(e) => setForm({ ...form, images: e.target.value.split("\n").map((x) => x.trim()).filter(Boolean) })} />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {form.images.map((src) => <img key={src} src={src} alt="" className="w-16 h-16 object-cover rounded" />)}
               </div>
             </div>
             <div>
