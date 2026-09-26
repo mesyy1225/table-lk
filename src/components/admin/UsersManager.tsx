@@ -2,41 +2,79 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-interface Profile {
+interface AdminUser {
   id: string;
-  full_name: string | null;
-  avatar_url: string | null;
+  email: string;
+  full_name: string;
   created_at: string;
+  is_admin: boolean;
 }
 
-interface RoleRow { user_id: string; role: string; }
+const call = async (body: Record<string, unknown>) => {
+  const { data, error } = await supabase.functions.invoke("admin-users", { body });
+  if (error) {
+    let msg = error.message;
+    try { msg = (await (error as any).context.json()).error || msg; } catch { /* ignore */ }
+    throw new Error(msg);
+  }
+  if (data?.error) throw new Error(data.error);
+  return data;
+};
 
 const UsersManager: React.FC = () => {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [adminIds, setAdminIds] = useState<Set<string>>(new Set());
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pwUser, setPwUser] = useState<AdminUser | null>(null);
+  const [newPw, setNewPw] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      const [{ data: profs, error: e1 }, { data: roles, error: e2 }] = await Promise.all([
-        (supabase as any).from("profiles").select("*").order("created_at", { ascending: false }),
-        (supabase as any).from("user_roles").select("user_id, role").eq("role", "admin"),
-      ]);
-      if (e1) toast.error(e1.message);
-      if (e2) toast.error(e2.message);
-      setProfiles(profs || []);
-      setAdminIds(new Set((roles || []).map((r: RoleRow) => r.user_id)));
-      setLoading(false);
-    })();
-  }, []);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const d = await call({ action: "list" });
+      setUsers(d.users);
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const changeRole = async (u: AdminUser, role: string) => {
+    try {
+      await call({ action: "set_role", user_id: u.id, role });
+      toast.success("Role updated");
+      load();
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const sendReset = async (u: AdminUser) => {
+    try {
+      await call({ action: "send_reset", email: u.email, redirect_to: `${window.location.origin}/reset-password` });
+      toast.success(`Reset email sent to ${u.email}`);
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const savePw = async () => {
+    if (!pwUser) return;
+    try {
+      await call({ action: "set_password", user_id: pwUser.id, password: newPw });
+      toast.success("Password changed");
+      setPwUser(null);
+      setNewPw("");
+    } catch (e: any) { toast.error(e.message); }
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Users ({profiles.length})</CardTitle>
+        <CardTitle>Users ({users.length})</CardTitle>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -46,30 +84,50 @@ const UsersManager: React.FC = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>User ID</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Joined</TableHead>
+                <TableHead className="text-right">Password</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {profiles.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.full_name || "—"}</TableCell>
-                  <TableCell className="text-xs font-mono">{p.id.slice(0, 8)}...</TableCell>
+              {users.map((u) => (
+                <TableRow key={u.id}>
+                  <TableCell className="font-medium">{u.full_name || "—"}</TableCell>
+                  <TableCell className="text-sm">{u.email}</TableCell>
                   <TableCell>
-                    {adminIds.has(p.id) ? (
-                      <Badge>Admin</Badge>
-                    ) : (
-                      <Badge variant="secondary">User</Badge>
-                    )}
+                    <Select value={u.is_admin ? "admin" : "user"} onValueChange={(v) => changeRole(u, v)}>
+                      <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
-                  <TableCell className="text-sm">{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-sm">{new Date(u.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-right space-x-2 whitespace-nowrap">
+                    <Button size="sm" variant="outline" onClick={() => sendReset(u)}>Email reset link</Button>
+                    <Button size="sm" onClick={() => setPwUser(u)}>Set password</Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
       </CardContent>
+
+      <Dialog open={!!pwUser} onOpenChange={(o) => !o && setPwUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set new password for {pwUser?.email}</DialogTitle>
+          </DialogHeader>
+          <Input type="text" placeholder="New password (min 6 characters)" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPwUser(null)}>Cancel</Button>
+            <Button onClick={savePw} disabled={newPw.length < 6}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
