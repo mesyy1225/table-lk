@@ -116,9 +116,11 @@ const Navbar: React.FC = () => {
 
           {authState.isAuthenticated ? (
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span className="text-sm font-medium">{authState.user?.name}</span>
+              <Button variant="ghost" size="sm" className="flex items-center gap-2" asChild>
+                <Link to="/my-orders">
+                  <User className="h-4 w-4" />
+                  <span className="text-sm font-medium">My Orders</span>
+                </Link>
               </Button>
               <Button variant="outline" size="sm" onClick={logout}>
                 Logout
@@ -200,6 +202,7 @@ const Navbar: React.FC = () => {
                       <User className="h-4 w-4" />
                       <span>{authState.user?.name}</span>
                     </div>
+                    <Button variant="outline" asChild><Link to="/my-orders">My Orders</Link></Button>
                     <Button onClick={logout}>Logout</Button>
                   </div>
                 ) : (
