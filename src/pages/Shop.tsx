@@ -17,7 +17,7 @@ const Shop: React.FC = () => {
         keywords="buy table online Sri Lanka, office table price, desk for sale, furniture shop, online furniture store, TableLK shop, hybrid table, ergonomic desk, custom table order"
         canonical="https://tablelk.com/shop"
       />
-      <div className="pt-24 pb-16">
+      <div className="pb-16">
         {/* Header */}
         <div className="bg-primary/10 py-12">
           <div className="container mx-auto px-6">

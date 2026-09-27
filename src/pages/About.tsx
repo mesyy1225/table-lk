@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 const About: React.FC = () => {
   return <Layout>
-      <div className="pt-24 pb-16">
+      <div className="pb-16">
         {/* Header */}
         <div className="relative bg-primary/10 py-20">
           <div className="container mx-auto px-6 text-center">
