@@ -1,0 +1,1 @@
+Keep the shared fixed-header offset in Layout for non-home pages; the home slideshow intentionally sits behind the header, so page-level top offsets must not duplicate the shared spacing.
