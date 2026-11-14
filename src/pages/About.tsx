@@ -4,11 +4,18 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
+import { policyConfig } from "@/lib/policyConfig";
 const About: React.FC = () => {
   return <Layout>
+      <SEOHead
+        title="About TableLK - Table Manufacturer in Bandaragama, Sri Lanka"
+        description="TableLK designs and builds office, study and dining tables in Bandaragama, Sri Lanka, with island-wide delivery. Meet the team behind every table."
+        canonical={`${policyConfig.website}/about`}
+      />
       <div className="pb-16">
         {/* Header */}
-        <div className="relative bg-primary/10 py-20">
+        <div className="relative bg-primary/10 py-12 md:py-20">
           <div className="container mx-auto px-6 text-center">
             <motion.h1 initial={{
             opacity: 0,
@@ -53,8 +60,8 @@ const About: React.FC = () => {
                   Our Mission
                 </span>
                 <h2 className="text-3xl font-serif font-bold mb-6">Crafting Quality, Enhancing Every Space</h2>
-                <p className="text-muted-foreground mb-4">At TableLK, our mission is to craft high-quality tables that seamlessly blends functionality, durability, and aesthetic appeal. We are dedicated to creating timeless pieces that enhance homes and workspaces, ensuring comfort, elegance, and lasting value for every customer.</p>
-                <p className="text-muted-foreground mb-6">We strive to innovate and refine our craftsmanship, using sustainable materials and advanced techniques to produce furniture that meets modern needs. Our commitment to excellence drives us to deliver superior products while fostering strong relationships with customers, built on trust and satisfaction.</p>
+                <p className="text-muted-foreground mb-4">At TableLK, our mission is to craft high-quality tables that seamlessly blend functionality, durability, and aesthetic appeal. We are dedicated to creating timeless pieces that enhance homes and workspaces, ensuring comfort, elegance, and lasting value for every customer.</p>
+                <p className="text-muted-foreground mb-6">We keep refining our designs and workshop methods, using durable melamine boards and powder-coated steel frames to build furniture that suits modern homes and offices. Our commitment to excellence drives us to deliver superior products while fostering strong relationships with customers, built on trust and satisfaction.</p>
                 <Button asChild>
                   <Link to="/shop">
                     Explore Our Collection
@@ -74,7 +81,7 @@ const About: React.FC = () => {
             }} transition={{
               duration: 0.6
             }} className="order-1 lg:order-2 h-[400px] md:h-[500px] rounded-lg overflow-hidden">
-                <img alt="TableLK fashion collection" className="w-full h-full object-cover" src="/lovable-uploads/c0eda8a5-90aa-4477-a353-8f7c26363615.jpg" />
+                <img alt="TableLK office tables with melamine tops and powder-coated steel frames" className="w-full h-full object-cover" src="/lovable-uploads/c0eda8a5-90aa-4477-a353-8f7c26363615.jpg" />
               </motion.div>
             </div>
           </div>
@@ -106,8 +113,8 @@ const About: React.FC = () => {
               description: "We expanded our product range, reaching more customers and building a strong reputation for durable and elegant furniture."
             }, {
               year: "2021",
-              title: "Sustainability Focus",
-              description: "We committed to sustainable practices, improving material sourcing and adopting eco-friendly production methods."
+              title: "Refining Our Craft",
+              description: "We refined our designs and production methods, focusing on durable materials and consistent quality in every table."
             }, {
               year: "2022",
               title: "Going Digital",
@@ -128,8 +135,8 @@ const About: React.FC = () => {
               duration: 0.5,
               delay: index * 0.1
             }} className="flex mb-10 last:mb-0">
-                  <div className="mr-6 relative">
-                    <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white font-bold">
+                  <div className="mr-4 sm:mr-6 relative flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
                       {milestone.year}
                     </div>
                     {index < 4 && <div className="absolute w-px h-full bg-primary/20 top-16 left-1/2 transform -translate-x-1/2"></div>}
@@ -154,7 +161,7 @@ const About: React.FC = () => {
                 The People Behind TableLK
               </h2>
               <p className="text-muted-foreground">
-                Meet our dedicated team committed to bringing you exceptional fashion products.
+                Meet the team that designs, builds and delivers every TableLK table.
               </p>
             </div>
             
@@ -163,17 +170,17 @@ const About: React.FC = () => {
               name: "Jagath Sooriarachchi",
               role: "Founder & Production Supervisor",
               image: "https://u.cubeupload.com/Tablelkk/WhatsAppImage2025062.jpg",
-              description: "Jagath's vision and creative direction have shaped TableLK from the beginning."
+              description: "Jagath founded TableLK and oversees production of every table in our workshop."
             }, {
               name: "Radika Madupani",
               role: "Senior Manager",
               image: "https://u.cubeupload.com/Tablelkk/131WhatsAppImage2025062.jpg",
-              description: "Radika brings years of experience and a unique perspective to our design process."
+              description: "Radika brings years of experience to running our workshop and keeping orders on schedule."
             }, {
               name: "Kalana Bimsara",
               role: "Sales Manager",
               image: "https://u.cubeupload.com/Tablelkk/359WhatsAppImage2025062.jpg",
-              description: "Kalana ensures that every TableLK product meets our high standards of quality."
+              description: "Kalana helps customers choose the right table and makes sure every order is delivered as promised."
             }].map((member, index) => <motion.div key={index} initial={{
               opacity: 0,
               y: 20
@@ -187,7 +194,7 @@ const About: React.FC = () => {
               delay: index * 0.1
             }} className="bg-accent/10 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                   <div className="h-64 overflow-hidden">
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    <img src={member.image} alt={`${member.name}, ${member.role} at TableLK`} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-1">{member.name}</h3>
@@ -219,20 +226,20 @@ const About: React.FC = () => {
               title: "Quality",
               description: "We never compromise on quality, selecting the finest materials and maintaining high standards in our production."
             }, {
-              title: "Sustainability",
-              description: "We're committed to responsible practices, minimizing environmental impact throughout our operations."
+              title: "Durability",
+              description: "Scratch-resistant tops and steel frames are chosen to handle years of daily use at home, in offices and in shops."
             }, {
-              title: "Community",
-              description: "We value the relationships we build with our customers, suppliers, and community partners."
+              title: "Customer Care",
+              description: "We answer questions quickly by phone, WhatsApp and email, before and after you buy."
             }, {
-              title: "Innovation",
-              description: "We constantly explore new ideas, materials, and techniques to improve our products."
+              title: "Made to Fit",
+              description: "Custom sizes, colours and layouts so your table fits your room and the way you work."
             }, {
               title: "Integrity",
               description: "We conduct business with honesty and transparency, building trust with everyone we work with."
             }, {
-              title: "Inclusivity",
-              description: "We design for everyone, celebrating diversity and creating products that can be enjoyed by all."
+              title: "Reliable Delivery",
+              description: "Careful packing and island-wide delivery, with clear timelines and support if anything goes wrong."
             }].map((value, index) => <motion.div key={index} initial={{
               opacity: 0,
               scale: 0.95
@@ -267,13 +274,13 @@ const About: React.FC = () => {
             duration: 0.6
           }} className="max-w-3xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-                Join the TableLK Community
+                Ready to Find Your Table?
               </h2>
               <p className="text-lg text-primary-foreground/90 mb-8">
-                Discover our collection and experience the TableLK difference for yourself.
+                Browse our office, study and dining tables, or contact us for a custom size.
               </p>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <Link to="/shop">Shop Collection</Link>
+                <Link to="/shop">Shop Tables</Link>
               </Button>
             </motion.div>
           </div>

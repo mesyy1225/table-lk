@@ -1,8 +1,6 @@
-
 import React, { ReactNode } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import WhatsAppBubble from "./WhatsAppBubble";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
@@ -25,7 +23,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </motion.main>
       <Footer />
-      <WhatsAppBubble />
     </div>
   );
 };

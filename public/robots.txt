@@ -1,5 +1,12 @@
-
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /payment/
+Disallow: /my-orders
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
 
-Sitemap: https://tablelk.com/sitemap.xml
+Sitemap: https://www.tablelk.com/sitemap.xml

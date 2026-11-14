@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -8,7 +8,6 @@ import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import CartPopup from "./CartPopup";
-import { toast } from "sonner";
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,7 +16,6 @@ const Navbar: React.FC = () => {
   const { state: cartState } = useCart();
   const { state: authState, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Handle scroll effect
   useEffect(() => {
@@ -47,17 +45,7 @@ const Navbar: React.FC = () => {
   };
 
   const toggleCart = () => {
-    if (!authState.isAuthenticated) {
-      toast.error("Please sign in to access your cart", {
-        description: "You need to be logged in to view your shopping cart",
-        action: {
-          label: "Sign In",
-          onClick: () => navigate("/login")
-        }
-      });
-      return;
-    }
-    setIsCartOpen(!isCartOpen);
+    setIsCartOpen((open) => !open);
   };
 
   return (
@@ -103,10 +91,10 @@ const Navbar: React.FC = () => {
               variant="ghost" 
               className="p-2" 
               onClick={toggleCart}
-              aria-label="Shopping Cart"
+              aria-label={cartState.totalItems > 0 ? `Shopping cart, ${cartState.totalItems} items` : "Shopping cart"}
             >
               <ShoppingCart className="h-5 w-5" />
-              {authState.isAuthenticated && cartState.totalItems > 0 && (
+              {cartState.totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {cartState.totalItems}
                 </span>
@@ -145,10 +133,10 @@ const Navbar: React.FC = () => {
               variant="ghost" 
               className="p-1 h-9 w-9" 
               onClick={toggleCart}
-              aria-label="Shopping Cart"
+              aria-label={cartState.totalItems > 0 ? `Shopping cart, ${cartState.totalItems} items` : "Shopping cart"}
             >
               <ShoppingCart className="h-5 w-5" />
-              {authState.isAuthenticated && cartState.totalItems > 0 && (
+              {cartState.totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {cartState.totalItems}
                 </span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { policyConfig } from '@/lib/policyConfig';
 
 // Declare the global injected Botpress object to satisfy TypeScript
 declare global {
@@ -17,7 +18,7 @@ const IntegratedChatSystem: React.FC = () => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
 
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
-  const whatsappNumber = '94768919013';
+  const whatsappNumber = policyConfig.whatsappNumber;
 
   const toggleWebchat = () => {
     if (window.botpressWebChat?.toggle) {

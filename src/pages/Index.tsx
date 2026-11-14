@@ -1,10 +1,99 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
+import { Facebook, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { policyConfig } from "@/lib/policyConfig";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type NewsletterStatus = "idle" | "loading" | "success" | "duplicate" | "error";
+
+const NewsletterSection: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<NewsletterStatus>("idle");
+  const [validationError, setValidationError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(value) || value.length > 254) {
+      setValidationError("Please enter a valid email address.");
+      return;
+    }
+    setValidationError("");
+    setStatus("loading");
+    const { error } = await (supabase as any).from("newsletter_subscribers").insert({ email: value });
+    if (!error) {
+      setStatus("success");
+      setEmail("");
+    } else if (error.code === "23505") {
+      setStatus("duplicate");
+      setEmail("");
+    } else {
+      setStatus("error");
+    }
+  };
+
+  const message =
+    validationError ||
+    (status === "success"
+      ? "Thanks for subscribing! We'll email you about new tables and offers."
+      : status === "duplicate"
+        ? "You're already subscribed. Thank you!"
+        : status === "error"
+          ? "Sorry, something went wrong. Please try again in a moment."
+          : "");
+
+  return (
+    <section className="py-16 md:py-20 bg-primary text-primary-foreground">
+      <div className="container mx-auto px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+            Join Our Newsletter for Latest Furniture Updates
+          </h2>
+          <p className="text-primary-foreground/80 mb-8">
+            Subscribe to receive updates on new table collections, special offers, and exclusive furniture deals in Sri Lanka.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" onSubmit={handleSubmit} noValidate>
+            <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+            <input
+              id="newsletter-email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="Your email address"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (validationError) setValidationError("");
+                if (status !== "idle" && status !== "loading") setStatus("idle");
+              }}
+              aria-invalid={!!validationError}
+              aria-describedby="newsletter-status"
+              className="flex-1 min-w-0 px-4 py-3 rounded-md bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 transition-colors"
+            />
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary-foreground text-primary rounded-md hover:bg-primary-foreground/90 transition-colors font-medium disabled:opacity-70"
+            >
+              {status === "loading" ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Subscribing...</>) : "Subscribe"}
+            </button>
+          </form>
+          <p id="newsletter-status" role="status" aria-live="polite" className="mt-4 min-h-[1.5rem] text-sm text-primary-foreground/90">
+            {message}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const Index: React.FC = () => {
   return (
@@ -13,7 +102,7 @@ const Index: React.FC = () => {
         title="TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka"
         description="TableLK - Premium office tables, desks & custom furniture in Sri Lanka. Quality craftsmanship, modern designs, affordable prices. Order now!"
         keywords="table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture, wooden table, modern table, ergonomic desk, workspace furniture, commercial furniture, buy table online Sri Lanka"
-        canonical="https://tablelk.com"
+        canonical={`${policyConfig.website}/`}
       />
       <div>
         {/* Hero Section - removed padding */}
@@ -99,11 +188,12 @@ const Index: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="relative h-[600px] rounded-lg overflow-hidden"
+                className="relative h-[360px] sm:h-[480px] lg:h-[600px] rounded-lg overflow-hidden"
               >
                 <img
                   alt="TableLK furniture manufacturing workshop in Sri Lanka"
                   className="object-cover h-full w-full"
+                  loading="lazy"
                   src="/lovable-uploads/bd57dbe4-9301-4540-bddd-af928d6a0a2d.jpg"
                 />
               </motion.div>
@@ -111,94 +201,31 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        {/* Testimonials Section */}
-        <section className="py-20 bg-accent/40">
+        {/* Customer reviews: real reviews live on Facebook */}
+        <section className="py-16 md:py-20 bg-accent/40">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
+            <div className="max-w-2xl mx-auto text-center">
               <span className="inline-block text-sm font-semibold tracking-wider uppercase text-primary/70 mb-3">
-                Customer Stories
+                Customer reviews
               </span>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold">
-                What Our Clients Say About TableLK Furniture
-              </h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  name: "Priya Perera",
-                  role: "Office Manager",
-                  quote: "The quality of our TableLK office tables is exceptional. The attention to detail and the materials make their pieces stand out in our workspace. Highly recommend for any office furniture needs in Sri Lanka.",
-                  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-                },
-                {
-                  name: "Kasun Silva",
-                  role: "Business Owner",
-                  quote: "I've been purchasing furniture from TableLK for my offices across Colombo. Their tables consistently impress with their quality and style, and they always exceed my expectations with timely delivery.",
-                  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
-                },
-                {
-                  name: "Chamari Fernando",
-                  role: "Interior Designer",
-                  quote: "The custom tables I ordered from TableLK are truly works of art. The design details are extraordinary, and they've become centerpieces in my client projects. Best furniture manufacturer in Sri Lanka!",
-                  image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=761&q=80"
-                }
-              ].map((testimonial, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-white p-8 rounded-lg shadow-soft"
-                >
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-lg">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-        
-        {/* Newsletter Section */}
-        <section className="py-20 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-6">
-            <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-                Join Our Newsletter for Latest Furniture Updates
+                See what our customers say
               </h2>
-              <p className="text-primary-foreground/80 mb-8">
-                Subscribe to receive updates on new table collections, special offers, and exclusive furniture deals in Sri Lanka.
+              <p className="text-muted-foreground mb-8">
+                Read honest reviews and see photos from TableLK customers across Sri Lanka on our Facebook page.
               </p>
-              <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="flex-1 px-4 py-3 rounded-md bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 transition-colors"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-primary-foreground text-primary rounded-md hover:bg-primary-foreground/90 transition-colors font-medium"
-                >
-                  Subscribe
-                </button>
-              </form>
+              <Button size="lg" asChild>
+                <a href={policyConfig.facebookUrl} target="_blank" rel="noopener noreferrer">
+                  <Facebook className="mr-2 h-5 w-5" />
+                  Read our reviews on Facebook
+                </a>
+              </Button>
             </div>
           </div>
         </section>
+
+        {/* Newsletter Section */}
+        <NewsletterSection />
       </div>
     </Layout>
   );

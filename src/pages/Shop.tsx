@@ -5,6 +5,7 @@ import ProductGrid from "@/components/ProductGrid";
 import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { useProducts } from "@/hooks/useProducts";
+import { policyConfig } from "@/lib/policyConfig";
 
 const Shop: React.FC = () => {
   const { data: products = [], isLoading } = useProducts();
@@ -15,51 +16,60 @@ const Shop: React.FC = () => {
         title="Shop Office Tables & Furniture Online - TableLK Sri Lanka"
         description="Buy premium office tables & furniture online at TableLK. Modern desks, custom furniture with island-wide delivery in Sri Lanka. WhatsApp support!"
         keywords="buy table online Sri Lanka, office table price, desk for sale, furniture shop, online furniture store, TableLK shop, hybrid table, ergonomic desk, custom table order"
-        canonical="https://tablelk.com/shop"
+        canonical={`${policyConfig.website}/shop`}
       />
       <div className="pb-16">
-        {/* Header */}
-        <div className="bg-primary/10 py-12">
+        {/* Short header so the product grid is the first thing on mobile */}
+        <div className="bg-primary/10 py-6 md:py-10">
           <div className="container mx-auto px-6">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.6 }} 
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
               className="max-w-3xl"
             >
-              <h1 className="text-4xl font-serif font-bold mb-4">
-                Shop Premium Office Tables & Furniture
+              <h1 className="text-2xl md:text-4xl font-serif font-bold mb-1 md:mb-3">
+                Shop Office &amp; Dining Tables
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Discover our complete collection of elegant, durable, and functional furniture for every workspace. Buy online with confidence - island-wide delivery across Sri Lanka.
+              <p className="text-sm md:text-lg text-muted-foreground">
+                Made in Sri Lanka, delivered island-wide.
               </p>
             </motion.div>
           </div>
         </div>
 
         {/* Products Section */}
-        <section className="py-12">
+        <section className="pt-6 pb-8 md:py-12">
           <div className="container mx-auto px-6">
-            <div className="mb-8">
-              <h2 className="text-2xl font-serif font-bold mb-4">
-                Our Office Table Collection
-              </h2>
-              <p className="text-muted-foreground max-w-2xl">
-                From modern hybrid tables to classic wooden desks, find the perfect furniture piece for your office, home, or commercial space. All tables are manufactured in Sri Lanka with premium materials and expert craftsmanship.
-              </p>
-            </div>
             {isLoading ? <p className="text-muted-foreground">Loading products...</p> : <ProductGrid products={products} />}
           </div>
         </section>
-        
+
+        {/* Collection intro (moved below the grid) */}
+        <section className="pb-12">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-serif font-bold mb-4">
+                Our Office Table Collection
+              </h2>
+              <p className="text-muted-foreground mb-4">
+                Discover our complete collection of elegant, durable, and functional furniture for every workspace. Buy online with confidence, with island-wide delivery across Sri Lanka.
+              </p>
+              <p className="text-muted-foreground">
+                From modern hybrid tables to classic wooden desks, find the perfect furniture piece for your office, home, or commercial space. All tables are manufactured in Sri Lanka with premium materials and expert craftsmanship.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* SEO Benefits Section */}
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-serif font-bold mb-8">
+              <h2 className="text-2xl md:text-3xl font-serif font-bold mb-8">
                 Why Choose TableLK for Your Office Furniture?
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="p-6 bg-white rounded-lg shadow-sm">
                   <h3 className="font-semibold text-lg mb-2">Premium Quality</h3>
                   <p className="text-sm text-muted-foreground">High-grade materials and superior craftsmanship ensure long-lasting furniture.</p>

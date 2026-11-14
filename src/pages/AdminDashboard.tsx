@@ -10,6 +10,7 @@ import ProductsManager from "@/components/admin/ProductsManager";
 import OrdersManager from "@/components/admin/OrdersManager";
 import UsersManager from "@/components/admin/UsersManager";
 import SiteContentManager from "@/components/admin/SiteContentManager";
+import MessagesManager from "@/components/admin/MessagesManager";
 
 const AdminDashboard: React.FC = () => {
   const { state, logout } = useAuth();
@@ -36,14 +37,14 @@ const AdminDashboard: React.FC = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Signed in as {state.user?.email}</p>
+              <p className="text-sm text-muted-foreground break-all">Signed in as {state.user?.email}</p>
             </div>
           </div>
           <Button variant="outline" onClick={handleLogout}>
@@ -52,14 +53,16 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <Tabs defaultValue="products">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 w-full sm:w-auto justify-start overflow-x-auto">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="content">Site Content</TabsTrigger>
           </TabsList>
           <TabsContent value="products"><ProductsManager /></TabsContent>
           <TabsContent value="orders"><OrdersManager /></TabsContent>
+          <TabsContent value="messages"><MessagesManager /></TabsContent>
           <TabsContent value="users"><UsersManager /></TabsContent>
           <TabsContent value="content"><SiteContentManager /></TabsContent>
         </Tabs>

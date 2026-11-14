@@ -14,8 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
+          city: string | null
+          delivery_fee: number
+          district: string | null
+          order_ref: string
+          paid_at: string | null
+          payhere_payment_id: string | null
+          payment_method: string
+          payment_status: string
+          subtotal: number
           created_at: string
           customer_email: string
           customer_name: string
@@ -30,6 +90,15 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          city?: string | null
+          delivery_fee?: number
+          district?: string | null
+          order_ref?: string
+          paid_at?: string | null
+          payhere_payment_id?: string | null
+          payment_method?: string
+          payment_status?: string
+          subtotal?: number
           created_at?: string
           customer_email: string
           customer_name: string
@@ -44,6 +113,15 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          city?: string | null
+          delivery_fee?: number
+          district?: string | null
+          order_ref?: string
+          paid_at?: string | null
+          payhere_payment_id?: string | null
+          payment_method?: string
+          payment_status?: string
+          subtotal?: number
           created_at?: string
           customer_email?: string
           customer_name?: string
@@ -215,6 +293,16 @@ export type Database = {
     }
     Functions: {
       check_email_exists: { Args: { email_to_check: string }; Returns: boolean }
+      get_order_status: {
+        Args: { _order_ref: string }
+        Returns: {
+          order_ref: string
+          payment_method: string
+          payment_status: string
+          status: string
+          total: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

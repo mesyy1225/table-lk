@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
-import { policyConfig } from "@/lib/policyConfig";
+import { policyConfig, whatsappLink } from "@/lib/policyConfig";
 
 export interface PolicySection {
   id: string;
@@ -103,7 +103,13 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ title, intro, seoTitle, seoDesc
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
-                  <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="hover:underline">{c.phone}</a>
+                  <a href={c.phoneHref} className="hover:underline">{c.phone}</a>
+                </li>
+                <li className="flex items-center gap-3">
+                  <MessageCircle className="h-4 w-4 flex-shrink-0 text-primary" />
+                  <a href={whatsappLink("Hi TableLK, I have a question about your policies")} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    WhatsApp {c.whatsapp}
+                  </a>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 flex-shrink-0 text-primary" />

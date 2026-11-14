@@ -14,7 +14,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
-  const maxPrice = Math.max(...products.map(p => p.price));
+  const maxPrice = products.length > 0 ? Math.max(...products.map((p) => p.price)) : 0;
   
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,6 +22,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Keep the price filter in sync when the product list (and so the max price) changes.
+  useEffect(() => {
+    setPriceRange([0, maxPrice]);
+  }, [maxPrice]);
+
+  const activeFilterCount =
+    selectedCategories.length +
+    selectedMaterials.length +
+    (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
+
+  const formatPrice = (n: number) => `Rs. ${n.toLocaleString()}`;
 
   const allCategories = getAllCategories(products);
   const allMaterials = getAllMaterials(products);
@@ -83,8 +95,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
 
   return (
     <div className="w-full">
-      <div className="lg:hidden mb-6 flex justify-between items-center">
-        <div className="relative w-full mr-2">
+      <div className="lg:hidden mb-4 flex justify-between items-center gap-2">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
@@ -97,10 +109,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         <Button
           variant="outline"
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 flex-shrink-0"
+          aria-expanded={isFilterOpen}
         >
           <SlidersHorizontal className="h-4 w-4" />
-          Filters
+          Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
         </Button>
       </div>
 
@@ -168,14 +181,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               <Slider
                 defaultValue={[0, maxPrice]}
                 max={maxPrice}
-                step={10}
+                step={100}
                 value={priceRange}
                 onValueChange={(value) => setPriceRange(value as [number, number])}
                 className="mb-6"
               />
               <div className="flex items-center justify-between">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
+                <span>{formatPrice(priceRange[0])}</span>
+                <span>{formatPrice(priceRange[1])}</span>
               </div>
             </div>
           </div>
@@ -257,14 +270,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                     <Slider
                       defaultValue={[0, maxPrice]}
                       max={maxPrice}
-                      step={10}
+                      step={100}
                       value={priceRange}
                       onValueChange={(value) => setPriceRange(value as [number, number])}
                       className="mb-6"
                     />
                     <div className="flex items-center justify-between">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
+                      <span>{formatPrice(priceRange[0])}</span>
+                      <span>{formatPrice(priceRange[1])}</span>
                     </div>
                   </div>
                 </div>
@@ -282,7 +295,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
           )}
         </AnimatePresence>
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 pb-24 lg:pb-0">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No products found</h3>

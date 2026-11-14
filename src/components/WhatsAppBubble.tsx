@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { policyConfig } from '@/lib/policyConfig';
 
 const WhatsAppBubble: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isBotpressLoaded, setIsBotpressLoaded] = useState(false);
   
   // Replace with your actual WhatsApp Business number (with country code, no + sign)
-  const whatsappNumber = "94768919013"; // Sri Lankan number from footer
+  const whatsappNumber = policyConfig.whatsappNumber;
   
   useEffect(() => {
     // Check if Botpress is loaded

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { policyConfig } from "@/lib/policyConfig";
 
 interface ContentMap {
   hero_title: string;
@@ -74,19 +75,20 @@ const SiteContentManager: React.FC = () => {
           <Label>About text</Label>
           <Textarea rows={6} value={content.about_text} onChange={(e) => setContent({ ...content, about_text: e.target.value })} />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <p className="text-sm text-muted-foreground">Leave a contact field empty to use the default from the site settings (shown as the placeholder).</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label>Contact email</Label>
-            <Input value={content.contact_email} onChange={(e) => setContent({ ...content, contact_email: e.target.value })} />
+            <Input placeholder={policyConfig.email} value={content.contact_email} onChange={(e) => setContent({ ...content, contact_email: e.target.value })} />
           </div>
           <div>
             <Label>Contact phone</Label>
-            <Input value={content.contact_phone} onChange={(e) => setContent({ ...content, contact_phone: e.target.value })} />
+            <Input placeholder={policyConfig.phone} value={content.contact_phone} onChange={(e) => setContent({ ...content, contact_phone: e.target.value })} />
           </div>
         </div>
         <div>
           <Label>Contact address</Label>
-          <Textarea rows={2} value={content.contact_address} onChange={(e) => setContent({ ...content, contact_address: e.target.value })} />
+          <Textarea rows={2} placeholder={policyConfig.address} value={content.contact_address} onChange={(e) => setContent({ ...content, contact_address: e.target.value })} />
         </div>
         <Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Save changes"}</Button>
       </CardContent>

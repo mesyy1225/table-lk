@@ -6,9 +6,6 @@ import { motion } from "framer-motion";
 import { ShoppingCart, Eye, Star, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
-import BuyNowForm from "@/components/BuyNowForm";
 
 interface ProductCardProps {
   product: Product;
@@ -17,33 +14,21 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
   const { addToCart } = useCart();
-  const { state: authState } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
-  const [isBuyNowOpen, setIsBuyNowOpen] = useState(false);
   const navigate = useNavigate();
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!authState.isAuthenticated) {
-      toast.error("Please sign in to add items to cart", {
-        description: "You need to be logged in to add items to your cart",
-        action: {
-          label: "Sign In",
-          onClick: () => navigate("/login")
-        }
-      });
-      return;
-    }
-    
-    addToCart(product, 1);
+    addToCart(product, 1, product.colors?.[0]);
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsBuyNowOpen(true);
+    navigate("/checkout", {
+      state: { buyNow: { productId: product.id, quantity: 1, color: product.colors?.[0] } },
+    });
   };
 
   const formatPrice = (price: number) => {
@@ -138,12 +123,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
         </Link>
       </motion.div>
 
-      {/* Buy Now Form Modal */}
-      <BuyNowForm 
-        product={product}
-        isOpen={isBuyNowOpen}
-        onClose={() => setIsBuyNowOpen(false)}
-      />
     </>
   );
 };

@@ -2,25 +2,37 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { policyLinks } from "@/components/PolicyPage";
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import PaymentBadges from "@/components/PaymentBadges";
+import { policyConfig } from "@/lib/policyConfig";
+import { Facebook, Mail, Phone, MapPin } from "lucide-react";
+
 const Footer: React.FC = () => {
   const { get } = useSiteContent();
-  return <footer className="bg-primary text-primary-foreground pt-16 pb-8">
+  // Admin-edited values (Site Content) override the defaults only when set.
+  const phone = get("contact_phone", policyConfig.phone);
+  const phoneHref = phone === policyConfig.phone ? policyConfig.phoneHref : `tel:${phone.replace(/[^\d+]/g, "")}`;
+  const email = get("contact_email", policyConfig.email);
+  const address = get("contact_address", policyConfig.address);
+
+  return (
+    <footer className="bg-primary text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="space-y-4">
             <h3 className="font-serif text-xl font-semibold">TableLK</h3>
-            <p className="text-primary-foreground/80 max-w-xs">TableLK is a leading furniture manufacturer dedicated to crafting high-quality Hybrid office tables. With a commitment to exceptional craftsmanship and innovative design, we transform spaces into functional and aesthetic environments</p>
+            <p className="text-primary-foreground/80 max-w-xs">
+              TableLK is a Sri Lankan furniture manufacturer crafting durable, good-looking office, study and dining tables, made to order and delivered island-wide.
+            </p>
             <div className="flex space-x-4 pt-2">
-              <a href="https://www.facebook.com/people/TableLK/100088083387315/" target="_blank" rel="noopener noreferrer" className="hover:text-accent-foreground transition-colors" aria-label="Facebook">
+              <a
+                href={policyConfig.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-accent-foreground transition-colors"
+                aria-label="TableLK on Facebook"
+              >
                 <Facebook size={20} />
-              </a>
-              <a href="#" className="hover:text-accent-foreground transition-colors" aria-label="Twitter">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="hover:text-accent-foreground transition-colors" aria-label="Instagram">
-                <Instagram size={20} />
               </a>
             </div>
           </div>
@@ -29,26 +41,18 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-semibold">Quick Links</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Contact
-                </Link>
-              </li>
+              {[
+                { to: "/", label: "Home" },
+                { to: "/shop", label: "Shop" },
+                { to: "/about", label: "About Us" },
+                { to: "/contact", label: "Contact" },
+              ].map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -72,15 +76,19 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <MapPin size={18} className="mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80">{get("contact_address", "TableLK Furniture, No. 31/A/02, Gammanpila, Bandaragama, Sri Lanka.")}</span>
+                <span className="text-primary-foreground/80">{address}</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone size={18} className="flex-shrink-0" />
-                <span className="text-primary-foreground/80">{get("contact_phone", "+94 72 4613204")}</span>
+                <a href={phoneHref} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                  {phone}
+                </a>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={18} className="flex-shrink-0" />
-                <span className="text-primary-foreground/80">{get("contact_email", "bossfurniturelk@gmail.com")}</span>
+                <a href={`mailto:${email}`} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors break-all">
+                  {email}
+                </a>
               </li>
             </ul>
           </div>
@@ -88,9 +96,11 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 text-center text-primary-foreground/70 text-sm">
           <p>© {new Date().getFullYear()} TableLK. All rights reserved.</p>
-          <p className="mt-2">Secure card payments by PayHere · Visa · Mastercard · American Express · Cash on delivery</p>
+          <PaymentBadges variant="dark" className="mt-4 justify-center" />
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;

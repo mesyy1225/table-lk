@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Product } from "@/lib/data";
+import { Product, products as staticProducts } from "@/lib/data";
 
 const mapRow = (r: any): Product => {
   const images: string[] = (r.images && r.images.length ? r.images : [r.image_url]).filter(Boolean);
@@ -26,20 +26,37 @@ const mapRow = (r: any): Product => {
   };
 };
 
+// Static catalogue from src/lib/data.ts, used when the database is unreachable or empty
+// so the shop is never blank. Fallback ids are numbers (1..6), database ids are uuids.
+const fallbackProducts = (): Product[] =>
+  staticProducts.map((p) => ({ ...p, images: [...p.images], categories: [...p.categories] }));
+
+/** True when the product list currently comes from the static fallback, not the database. */
+export let isFallback = false;
+
+const fetchProducts = async (): Promise<Product[]> => {
+  let list: Product[] = [];
+  try {
+    const { data, error } = await (supabase as any)
+      .from("products")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    list = (data || []).map(mapRow);
+  } catch (e) {
+    console.warn("Products could not be loaded from the database; using the built-in catalogue.", e);
+  }
+  isFallback = list.length === 0;
+  if (isFallback) list = fallbackProducts();
+  if (typeof window !== "undefined") window.products = list;
+  return list;
+};
+
 export const useProducts = () =>
   useQuery({
     queryKey: ["products"],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("products")
-        .select("*")
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      const list = (data || []).map(mapRow);
-      if (typeof window !== "undefined") window.products = list;
-      return list as Product[];
-    },
+    queryFn: fetchProducts,
     staleTime: 60_000,
   });
 

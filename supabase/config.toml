@@ -1,3 +1,10 @@
-project_id = "hpnabhegkibwmqqlsqwr"
+project_id = "hraxbaajigsfymqybqdc"
+
 [functions.admin-users]
+verify_jwt = false
+
+[functions.payhere-checkout]
+verify_jwt = false
+
+[functions.payhere-notify]
 verify_jwt = false

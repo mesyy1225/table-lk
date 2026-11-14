@@ -3,27 +3,30 @@ import React from "react";
 import { Product } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { MinusCircle, PlusCircle, Trash2 } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { useCart, MAX_ITEM_QUANTITY } from "@/context/CartContext";
 import { motion } from "framer-motion";
 
 interface CartItemProps {
   product: Product;
   quantity: number;
+  color?: string;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
+const formatPrice = (price: number) => `LKR ${price.toLocaleString("en-LK")}`;
+
+const CartItem: React.FC<CartItemProps> = ({ product, quantity, color }) => {
   const { removeFromCart, updateQuantity } = useCart();
 
   const handleQuantityDecrease = () => {
     if (quantity > 1) {
-      updateQuantity(product.id, quantity - 1);
+      updateQuantity(product.id, quantity - 1, color);
     } else {
-      removeFromCart(product.id);
+      removeFromCart(product.id, color);
     }
   };
 
   const handleQuantityIncrease = () => {
-    updateQuantity(product.id, quantity + 1);
+    updateQuantity(product.id, quantity + 1, color);
   };
 
   return (
@@ -36,7 +39,7 @@ const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
     >
       <div className="flex-shrink-0 w-full sm:w-24 h-24 mb-4 sm:mb-0 sm:mr-6 relative rounded-md overflow-hidden">
         <img
-          src={product.images[0]}
+          src={product.images?.[0] || "/placeholder.svg"}
           alt={product.name}
           className="w-full h-full object-cover"
         />
@@ -47,7 +50,7 @@ const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
           {product.name}
         </h3>
         <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
-          {product.material}
+          {color ? `Colour: ${color}` : product.material}
         </p>
         
         <div className="flex flex-wrap items-center">
@@ -68,6 +71,7 @@ const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
               className="h-7 w-7"
               onClick={handleQuantityIncrease}
               aria-label="Increase quantity"
+              disabled={quantity >= MAX_ITEM_QUANTITY}
             >
               <PlusCircle className="h-4 w-4" />
             </Button>
@@ -77,7 +81,7 @@ const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
             variant="ghost"
             size="sm"
             className="text-muted-foreground hover:text-destructive"
-            onClick={() => removeFromCart(product.id)}
+            onClick={() => removeFromCart(product.id, color)}
           >
             <Trash2 className="h-4 w-4 mr-1" />
             <span className="text-xs">Remove</span>
@@ -86,9 +90,9 @@ const CartItem: React.FC<CartItemProps> = ({ product, quantity }) => {
       </div>
 
       <div className="mt-3 sm:mt-0 sm:ml-4 text-right">
-        <span className="font-semibold text-lg">${product.price}</span>
+        <span className="font-semibold text-lg">{formatPrice(product.price * quantity)}</span>
         <p className="text-sm text-muted-foreground">
-          ${product.price} × {quantity}
+          {formatPrice(product.price)} × {quantity}
         </p>
       </div>
     </motion.div>
