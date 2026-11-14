@@ -1,143 +1,210 @@
-import { useSiteContent } from "@/hooks/useSiteContent";
-import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useAnimation, useInView, type Variants } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
-import { whatsappLink } from "@/lib/policyConfig";
+import { ArrowUpRight } from "lucide-react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useSiteContent } from "@/hooks/useSiteContent";
 import { useHeroSlides } from "@/hooks/useHeroSlides";
+import { EASE_OUT, SplitText } from "./motion";
+import { cn } from "@/lib/utils";
 
-const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
+const ROTATE_MS = 6500;
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { delayChildren: 0.3, staggerChildren: 0.2 },
-  },
+/** "TableLK teak-finish dining table on a black steel frame" becomes "Teak-finish dining table on a black steel frame". */
+const caption = (alt: string) => {
+  const text = alt.replace(/^table\s?lk\s+/i, "").trim();
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
 };
 
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.8, ease: EASE },
-  },
-};
-
+/**
+ * Home hero. A real table photo fills the first screen and sits behind the header
+ * (Layout adds no top offset on "/"). The photos are the admin-managed carousel slides,
+ * shown as a fan of sample chips: pick a chip and the photo wipes to that table.
+ */
 const Hero: React.FC = () => {
   const { get } = useSiteContent();
-  const heroTitle = get("hero_title", "Office & Dining Tables, Made in Sri Lanka");
-  const heroSubtitle = get(
+  const title = get("hero_title", "Tables built to your size.");
+  const subtitle = get(
     "hero_subtitle",
-    "Sturdy melamine tops on powder-coated steel frames, built in our Bandaragama workshop and delivered island-wide."
+    "Melamine tops on powder-coated steel frames, made to order in our Bandaragama workshop and delivered anywhere in Sri Lanka.",
   );
-  const controls = useAnimation();
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
   const { slides } = useHeroSlides();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [current, setCurrent] = useState(0);
+  const [previous, setPrevious] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
+
+  const go = useCallback(
+    (next: number) => {
+      setCurrent((cur) => {
+        const target = ((next % slides.length) + slides.length) % slides.length;
+        if (target !== cur) setPrevious(cur);
+        return target;
+      });
+    },
+    [slides.length],
+  );
 
   // Slides can change after loading from the database; keep the index in range.
   useEffect(() => {
-    if (currentSlide >= slides.length) setCurrentSlide(0);
-  }, [slides.length, currentSlide]);
-
-  // Auto rotate slides
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+    if (current >= slides.length) {
+      setCurrent(0);
+      setPrevious(null);
+    }
+  }, [slides.length, current]);
 
   useEffect(() => {
-    if (isInView) controls.start("visible");
-  }, [controls, isInView]);
+    if (paused || reduce || slides.length < 2) return;
+    const timer = window.setTimeout(() => go(current + 1), ROTATE_MS);
+    return () => window.clearTimeout(timer);
+  }, [current, paused, reduce, slides.length, go]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  // The photo drifts and the text lifts away as the hero scrolls out.
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const photoY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-22%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  // The home hero intentionally sits behind the fixed header (Layout adds no top offset on "/"),
-  // so the content gets its own top padding to clear the navbar.
+  const step = slides.length > 1 ? Math.min(15, 60 / (slides.length - 1)) : 0;
+  const active = slides[current] ?? slides[0];
+
   return (
-    <section className="relative min-h-[100svh] md:min-h-[600px] flex items-center overflow-hidden bg-neutral-900" ref={ref}>
-      {/* Background slideshow */}
-      <div className="absolute inset-0 w-full h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
-            aria-hidden={index !== currentSlide}
-          >
-            <img
-              src={slide.image_url}
-              alt={slide.alt}
-              className="object-cover w-full h-full"
-              style={{ objectPosition: slide.object_position }}
-              loading={index === 0 ? "eager" : "lazy"}
-              decoding="async"
-            />
-          </div>
-        ))}
-        {/* Dark gradient overlay for text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40 md:bg-gradient-to-r md:from-black/80 md:via-black/50 md:to-black/10" />
-
-        {/* Slide Controls (hidden when there is only one slide) */}
-        {slides.length > 1 && (
-        <div className="absolute bottom-6 left-6 md:left-auto md:bottom-10 md:right-10 flex items-center space-x-2 z-20">
-          <button onClick={prevSlide} className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors text-white" aria-label="Previous slide">
-            <ChevronLeft size={20} />
-          </button>
-          <div className="flex space-x-1">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`h-2 rounded-full transition-all ${index === currentSlide ? "bg-white w-4" : "w-2 bg-white/50 hover:bg-white/70"}`}
-                aria-label={`Go to slide ${index + 1}`}
+    <section ref={sectionRef} className="relative flex min-h-hero items-end overflow-hidden bg-ink text-white">
+      <motion.div className="absolute inset-0" style={reduce ? undefined : { y: photoY }}>
+        {slides.map((slide, i) => {
+          const isCurrent = i === current;
+          const isPrevious = i === previous;
+          if (!isCurrent && !isPrevious) return null;
+          return (
+            <motion.div
+              key={`${slide.id}-${isCurrent ? "on" : "off"}`}
+              className="absolute inset-0"
+              style={{ zIndex: isCurrent ? 2 : 1 }}
+              initial={isCurrent && previous !== null && !reduce ? { clipPath: "inset(0% 0% 0% 100%)" } : false}
+              animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+              transition={{ duration: 1.25, ease: EASE_OUT }}
+              aria-hidden={!isCurrent}
+            >
+              <motion.img
+                src={slide.image_url}
+                alt={isCurrent ? slide.alt : ""}
+                className="h-full w-full object-cover"
+                style={{ objectPosition: slide.object_position }}
+                decoding="async"
+                initial={isCurrent && !reduce ? { scale: 1.14 } : false}
+                animate={{ scale: 1 }}
+                transition={{ duration: 2.4, ease: EASE_OUT }}
               />
-            ))}
-          </div>
-          <button onClick={nextSlide} className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors text-white" aria-label="Next slide">
-            <ChevronRight size={20} />
-          </button>
-        </div>
-        )}
-      </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
 
-      {/* pb-24 on mobile keeps the CTAs clear of the slide controls pinned to the bottom */}
-      <div className="container mx-auto px-6 md:px-8 relative z-10 pt-24 pb-24 md:pb-0">
-        <motion.div className="max-w-2xl text-white" variants={containerVariants} initial="hidden" animate={controls}>
-          <motion.div variants={itemVariants} className="inline-block mb-3 text-xs sm:text-sm font-semibold tracking-wider uppercase bg-white/15 backdrop-blur-sm px-3 py-1 rounded-full text-white/90">
-            Made in Sri Lanka · Island-wide delivery
-          </motion.div>
+      {/* Shade: keeps the header and the headline readable on any photo */}
+      <div className="pointer-events-none absolute inset-0 z-[3] bg-[linear-gradient(to_bottom,hsl(220_10%_6%/0.55)_0%,transparent_22%,transparent_38%,hsl(220_10%_6%/0.82)_100%)]" />
 
-          <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight mb-5 [text-shadow:0_2px_12px_rgba(0,0,0,0.35)]">
-            {heroTitle}
-          </motion.h1>
-
-          <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-xl text-white/90 mb-8 max-w-xl">
-            {heroSubtitle}
+      <motion.div
+        className="shell relative z-[4] grid w-full gap-10 pb-10 pt-[calc(var(--header-h)+3rem)] md:pb-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16"
+        style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
+      >
+        <div>
+          <SplitText as="h1" text={title} immediate delay={0.15} className="display-xl max-w-[11ch]" />
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: EASE_OUT, delay: 0.55 }}
+            className="mt-6 max-w-[44ch] text-base text-white/85 md:text-lg"
+          >
+            {subtitle}
           </motion.p>
-
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Button size="lg" asChild className="group w-full sm:w-auto">
-              <Link to="/shop">
-                Shop Tables
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto bg-white/10 text-white border-white/80 hover:bg-white/20 hover:text-white" asChild>
-              <a href={whatsappLink("Hi TableLK, I'd like to order a table")} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Order on WhatsApp
-              </a>
-            </Button>
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: EASE_OUT, delay: 0.68 }}
+            className="mt-8 flex flex-col gap-3 sm:flex-row"
+          >
+            <Link
+              to="/design"
+              className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-teak px-7 text-base font-semibold text-ink transition-transform duration-300 ease-out-expo hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+            >
+              Design your table
+              <ArrowUpRight className="h-[1.125rem] w-[1.125rem] transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+            <Link
+              to="/shop"
+              className="inline-flex h-14 items-center justify-center rounded-full border border-white/45 px-7 text-base font-semibold text-white transition-colors duration-300 hover:bg-white hover:text-ink active:scale-[0.98]"
+            >
+              Shop tables
+            </Link>
           </motion.div>
-        </motion.div>
-      </div>
+        </div>
+
+        {slides.length > 1 && (
+          <motion.div
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex items-end gap-5 pr-16 lg:mr-14 lg:flex-col lg:items-end lg:pr-0"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocusCapture={() => setPaused(true)}
+            onBlurCapture={() => setPaused(false)}
+          >
+            {/* The fan: chips hang from one pin, like a board-sample ring */}
+            <div
+              role="group"
+              aria-label="Choose a table photo"
+              className="relative h-[8.5rem] w-[9.5rem] shrink-0 lg:h-[12.5rem] lg:w-[15rem]"
+            >
+              {slides.map((slide, i) => {
+                const offset = i - current;
+                const isCurrent = offset === 0;
+                return (
+                  <motion.button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => go(i)}
+                    aria-label={`Show photo ${i + 1} of ${slides.length}: ${caption(slide.alt)}`}
+                    aria-pressed={isCurrent}
+                    className={cn(
+                      "chip absolute bottom-0 left-1/2 h-[7.25rem] w-[5rem] origin-[0.9rem_0.9rem] overflow-hidden bg-ash shadow-chip outline-offset-4 lg:h-[10.5rem] lg:w-[7.25rem]",
+                      isCurrent ? "cursor-default" : "cursor-pointer",
+                    )}
+                    style={{ zIndex: isCurrent ? slides.length + 1 : slides.length - Math.abs(offset), marginLeft: "-0.9rem" }}
+                    initial={reduce ? false : { rotate: 0, opacity: 0 }}
+                    animate={{
+                      rotate: offset * step,
+                      opacity: 1,
+                      filter: isCurrent ? "brightness(1)" : "brightness(0.72)",
+                    }}
+                    whileHover={isCurrent ? undefined : { filter: "brightness(0.95)" }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 170,
+                      damping: 20,
+                      delay: reduce ? 0 : previous === null ? 0.9 + i * 0.06 : 0,
+                    }}
+                  >
+                    <img
+                      src={slide.image_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      style={{ objectPosition: slide.object_position }}
+                      decoding="async"
+                    />
+                  </motion.button>
+                );
+              })}
+            </div>
+            <p className="min-w-0 max-w-[15rem] text-sm text-white/80 lg:text-right" aria-live="polite">
+              <span className="num mb-1 block font-semibold text-white">
+                {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+              </span>
+              {caption(active?.alt ?? "")}
+            </p>
+          </motion.div>
+        )}
+      </motion.div>
     </section>
   );
 };

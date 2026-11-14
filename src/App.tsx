@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import BotpressInjector from "./components/BotpressInjector";
+import SmoothScroll from "./components/SmoothScroll";
 
 // Main shopping pages load with the first bundle; everything else is split
 // into its own chunk so the home and shop pages download faster.
@@ -30,12 +31,13 @@ const ShippingPolicy = lazy(() => import("./pages/ShippingPolicy"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const DesignTable = lazy(() => import("./pages/DesignTable"));
 
 const queryClient = new QueryClient();
 
 const PageFallback = () => (
   <div className="min-h-screen flex items-center justify-center" role="status" aria-label="Loading">
-    <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+    <div className="h-8 w-8 rounded-full border-2 border-ink/15 border-t-teak-deep animate-spin" />
   </div>
 );
 
@@ -49,11 +51,13 @@ const App = () => (
           <BotpressInjector />
 
           <BrowserRouter>
+            <SmoothScroll />
             <Suspense fallback={<PageFallback />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/design" element={<DesignTable />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/checkout" element={<Checkout />} />

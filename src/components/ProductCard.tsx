@@ -1,129 +1,73 @@
-
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { Product } from "@/lib/data";
-import { motion } from "framer-motion";
-import { ShoppingCart, Eye, Star, ShoppingBag } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { formatPrice, formatSize } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
+  /** Kept for callers that pass a list position; entrances are staggered by the parent. */
   index?: number;
+  className?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
+/**
+ * A table in the catalogue, set like a sample label: photo on top, then name, size and price.
+ * The whole card links to the product; the round button adds one to the cart.
+ */
+const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
   const { addToCart } = useCart();
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-  
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const image = product.images?.[0] || "/placeholder.svg";
+  const size = formatSize(product.dimensions);
+  const category = product.categories?.[0];
+
+  const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product, 1, product.colors?.[0]);
   };
 
-  const handleBuyNow = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigate("/checkout", {
-      state: { buyNow: { productId: product.id, quantity: 1, color: product.colors?.[0] } },
-    });
-  };
-
-  const formatPrice = (price: number) => {
-    return `LKR ${price.toLocaleString('en-LK')}`;
-  };
-  
-  // Ensure the image exists, use a placeholder if not
-  const productImage = product.images && product.images.length > 0 && product.images[0] 
-    ? product.images[0] 
-    : "/placeholder.svg";
-
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
-        className="group product-card h-full"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Link to={`/product/${product.id}`} className="block h-full">
-          <div className="product-image-container relative overflow-hidden rounded-lg h-60 md:h-72">
-            <img
-              src={productImage}
-              alt={product.name}
-              className="product-image h-full w-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.src = "/placeholder.svg";
-              }}
-            />
-            
-            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-primary"
-                onClick={handleBuyNow}
-                aria-label="Buy now"
-              >
-                <ShoppingBag className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-primary"
-                onClick={handleAddToCart}
-                aria-label="Add to cart"
-              >
-                <ShoppingCart className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="secondary" 
-                className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-primary"
-                aria-label="View details"
-                asChild
-              >
-                <div>
-                  <Eye className="h-4 w-4" />
-                </div>
-              </Button>
-            </div>
-            
-            {product.categories[0] && (
-              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-primary">
-                {product.categories[0]}
-              </div>
-            )}
-          </div>
-          
-          <div className="pt-4 pb-1 px-1">
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="font-medium text-lg text-primary/90">{product.name}</h3>
-              <span className="text-lg font-semibold text-primary">{formatPrice(product.price)}</span>
-            </div>
-            
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-              {product.shortDescription}
-            </p>
-            
-            <div className="flex items-center text-amber-500">
-              <Star className="h-4 w-4 fill-current" />
-              <span className="ml-1 text-sm font-medium">{product.rating}</span>
-              <span className="mx-1 text-muted-foreground text-sm">•</span>
-              <span className="text-sm font-medium text-primary/70">{product.material.split(' with')[0]}</span>
-            </div>
-          </div>
-        </Link>
-      </motion.div>
+    <article className={cn("group relative flex h-full flex-col", className)}>
+      <Link to={`/product/${product.id}`} className="flex h-full flex-col rounded-xl" aria-label={`${product.name}, ${formatPrice(product.price)}`}>
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-secondary">
+          <img
+            src={image}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out-expo group-hover:scale-[1.06]"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = "/placeholder.svg";
+            }}
+          />
+          {!product.inStock && (
+            <span className="label absolute left-3 top-3 rounded-full bg-ink px-2.5 py-1 text-white">Out of stock</span>
+          )}
+        </div>
 
-    </>
+        <div className="flex flex-1 flex-col pt-3.5">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-[1.0625rem] font-bold leading-tight tracking-[-0.02em] md:text-lg">{product.name}</h3>
+          </div>
+          <p className="mt-1 text-sm text-steel first-letter:uppercase">{[category, size].filter(Boolean).join(" · ")}</p>
+          <p className="num mt-auto pt-3 text-[1.0625rem] font-semibold">{formatPrice(product.price)}</p>
+        </div>
+      </Link>
+
+      <button
+        type="button"
+        onClick={handleAdd}
+        aria-label={`Add ${product.name} to cart`}
+        className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-chip transition-[transform,background-color,color] duration-300 ease-out-expo hover:scale-105 hover:bg-teak active:scale-95 md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:focus-visible:translate-y-0 md:focus-visible:opacity-100 md:transition-all"
+      >
+        <Plus className="h-5 w-5" strokeWidth={2} />
+      </button>
+    </article>
   );
 };
 

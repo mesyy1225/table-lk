@@ -1,80 +1,68 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Table LK design tokens. The palette is the workshop's own materials:
+  ash-white board (ground), board white (surfaces), teak and walnut (brand),
+  and a deep navy ink that matches the Table LK logo. Values are HSL triplets for Tailwind/shadcn.
+*/
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 20 14.3% 4.1%;
+    /* Materials */
+    --ash: 80 7% 94%;
+    --board: 0 0% 100%;
+    --ink: 216 42% 11%;
+    --navy: 214 58% 22%;
+    --steel: 216 12% 38%;
+    --teak: 28 58% 52%;
+    --teak-deep: 24 62% 33%;
+    --teak-tint: 32 48% 88%;
+    --walnut: 22 30% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    /* shadcn roles mapped onto the materials */
+    --background: var(--ash);
+    --foreground: var(--ink);
+    --card: var(--board);
+    --card-foreground: var(--ink);
+    --popover: var(--board);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: 80 7% 96%;
+    --secondary: 80 6% 89%;
+    --secondary-foreground: var(--ink);
+    --muted: 80 6% 90%;
+    --muted-foreground: var(--steel);
+    --accent: var(--teak-tint);
+    --accent-foreground: var(--ink);
+    --destructive: 4 72% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 80 6% 82%;
+    --input: 80 5% 74%;
+    --ring: var(--teak-deep);
+    --radius: 0.625rem;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+    /* Layout: one fixed header height, used by Layout, sticky panels and anchors */
+    --header-h: 4rem;
 
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
+    /* Motion */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
-
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
-
-    --accent: 42 36.8% 92%;
-    --accent-foreground: 24 9.8% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 24 5.4% 63.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: var(--board);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--ink);
+    --sidebar-primary-foreground: 80 7% 96%;
+    --sidebar-accent: var(--teak-tint);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: 80 6% 82%;
+    --sidebar-ring: var(--teak-deep);
   }
 
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
-
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 24 5.4% 63.9%;
+  @media (min-width: 768px) {
+    :root {
+      --header-h: 4.5rem;
+    }
   }
 }
 
@@ -83,92 +71,268 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+
+  /* Lenis smooth scrolling (see SmoothScroll.tsx) */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "tnum" 0;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  h1, h2, h3, h4, h5 {
-    @apply font-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    @apply font-display;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  h1,
+  h2 {
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+  }
+
+  h3,
+  h4,
+  h5 {
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Browser surfaces carry the palette too */
+  ::selection {
+    background: hsl(var(--teak));
+    color: hsl(var(--ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--teak-deep));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: hsl(var(--teak-deep));
+  }
+
+  html {
+    scrollbar-color: hsl(var(--steel) / 0.55) hsl(var(--ash));
+  }
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--ash));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--steel) / 0.5);
+    border-radius: 999px;
+    border: 3px solid hsl(var(--ash));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--ink) / 0.7);
   }
 }
 
-.glass-card {
-  @apply bg-white/60 backdrop-blur-sm border-white/20 border;
+@layer components {
+  /* Page gutter + max width used by every storefront section */
+  .shell {
+    @apply mx-auto w-full max-w-[84rem] px-5 md:px-8 lg:px-12;
+  }
+
+  /* Section rhythm: more air above a heading than below it */
+  .section {
+    @apply py-16 md:py-24 lg:py-28;
+  }
+
+  /* Headline sizes */
+  .display-xl {
+    @apply font-display font-bold;
+    font-size: clamp(2.5rem, 6.4vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .display-lg {
+    @apply font-display font-bold;
+    font-size: clamp(2rem, 4.1vw, 3.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+  }
+  .display-md {
+    @apply font-display font-semibold;
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    line-height: 1.1;
+    letter-spacing: -0.022em;
+  }
+
+  /* Sample-label text: the printed line under a finish chip */
+  .label {
+    @apply font-sans text-[0.75rem] font-semibold uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+    The sample chip: a rounded slab of material with a punched hanging hole.
+    The hole is a real cut-out (mask), so whatever is behind shows through.
+  */
+  .chip {
+    --hole: 0.3rem;
+    --hole-x: 0.9rem;
+    --hole-y: 0.9rem;
+    border-radius: 0.75rem;
+    -webkit-mask: radial-gradient(circle var(--hole) at var(--hole-x) var(--hole-y), transparent 97%, #000 100%);
+    mask: radial-gradient(circle var(--hole) at var(--hole-x) var(--hole-y), transparent 97%, #000 100%);
+  }
+  .chip-hole-right {
+    --hole-x: calc(100% - 0.9rem);
+  }
+
+  /* Text link with a drawn underline that grows from the left */
+  .link-draw {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.45s var(--ease-out);
+    padding-bottom: 2px;
+  }
+  .link-draw:hover,
+  .link-draw:focus-visible,
+  .link-draw[aria-current="page"] {
+    background-size: 100% 1.5px;
+  }
+
+  /* Material fills */
+  .mat-teak {
+    background-color: hsl(var(--teak));
+    background-image: repeating-linear-gradient(
+        92deg,
+        hsl(24 60% 30% / 0.16) 0 1px,
+        transparent 1px 7px,
+        hsl(24 60% 30% / 0.1) 7px 8px,
+        transparent 8px 19px
+      ),
+      linear-gradient(180deg, hsl(30 62% 56%), hsl(26 56% 47%));
+  }
+  .mat-walnut {
+    background-color: hsl(var(--walnut));
+    background-image: repeating-linear-gradient(
+        91deg,
+        hsl(0 0% 0% / 0.22) 0 1px,
+        transparent 1px 9px,
+        hsl(30 30% 40% / 0.08) 9px 10px,
+        transparent 10px 23px
+      ),
+      linear-gradient(180deg, hsl(22 30% 18%), hsl(22 32% 12%));
+  }
+  .mat-ash {
+    background-color: hsl(60 9% 90%);
+    background-image: repeating-linear-gradient(
+        91deg,
+        hsl(40 8% 60% / 0.14) 0 1px,
+        transparent 1px 11px,
+        hsl(40 8% 60% / 0.08) 11px 12px,
+        transparent 12px 27px
+      ),
+      linear-gradient(180deg, hsl(60 10% 93%), hsl(60 8% 87%));
+  }
+  .mat-black {
+    background-color: hsl(var(--ink));
+    background-image: linear-gradient(160deg, hsl(220 8% 17%), hsl(220 12% 8%));
+  }
+  /* Brand navy, taken from the logo: footer and dark bands */
+  .mat-ink {
+    background-color: hsl(var(--ink));
+    background-image: linear-gradient(165deg, hsl(213 40% 17%), hsl(214 46% 10%));
+  }
+  .mat-white {
+    background-color: #fff;
+    background-image: linear-gradient(160deg, #fff, hsl(80 8% 93%));
+  }
+
+  /* Legacy helpers still referenced by a few components */
+  .product-card {
+    @apply relative overflow-hidden rounded-xl bg-card;
+  }
+  .product-image-container {
+    @apply relative overflow-hidden;
+  }
+  .product-image {
+    @apply w-full object-cover;
+  }
 }
 
-.image-fade-in {
-  animation: fadeIn 0.5s ease-in;
+@layer utilities {
+  .pt-header {
+    padding-top: var(--header-h);
+  }
+  .top-header {
+    top: calc(var(--header-h) + 1rem);
+  }
+  .scroll-mt-header {
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+  .min-h-hero {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+  .ease-out-expo {
+    transition-timing-function: var(--ease-out);
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.hover-scale {
-  transition: transform 0.3s ease;
-}
-
-.hover-scale:hover {
-  transform: scale(1.02);
-}
-
-.product-card {
-  @apply relative overflow-hidden bg-white rounded-lg shadow-soft hover:shadow-hover transition-all duration-300;
-}
-
-.product-image-container {
-  @apply relative overflow-hidden;
-}
-
-.product-image {
-  @apply object-cover w-full transition-transform duration-500 ease-in-out;
-}
-
-.product-card:hover .product-image {
-  transform: scale(1.05);
-}
-
-.page-transition {
-  @apply transition-opacity duration-300;
-}
-
-.page-transition-enter {
-  @apply opacity-0;
-}
-
-.page-transition-enter-active {
-  @apply opacity-100;
-}
-
-.page-transition-exit {
-  @apply opacity-100;
-}
-
-.page-transition-exit-active {
-  @apply opacity-0;
-}
-
-.nav-item {
-  position: relative;
-  @apply font-medium text-primary/80 hover:text-primary transition-colors;
-}
-
-.nav-item::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 1px;
-  bottom: -2px;
-  left: 0;
-  background-color: currentColor;
-  transition: width 0.3s ease;
-}
-
-.nav-item:hover::after {
-  width: 100%;
-}
-
-.nav-item-active::after {
-  width: 100%;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

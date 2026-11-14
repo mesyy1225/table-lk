@@ -1,165 +1,147 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Minus, Plus } from "lucide-react";
-import { useCart, MAX_ITEM_QUANTITY } from "@/context/CartContext";
+import * as Dialog from "@radix-ui/react-dialog";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, ShoppingBag, X } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import CartItem from "@/components/CartItem";
+import { EASE_OUT } from "@/components/motion";
+import { formatPrice } from "@/lib/format";
 
 interface CartPopupProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const formatPrice = (price: number) => `LKR ${price.toLocaleString("en-LK")}`;
+const RowSkeleton: React.FC = () => (
+  <div className="flex animate-pulse gap-4 border-b border-ink/10 py-5">
+    <div className="h-20 w-20 shrink-0 rounded-xl bg-ink/10" />
+    <div className="flex-1 space-y-3 py-1">
+      <div className="h-4 w-3/4 rounded bg-ink/10" />
+      <div className="h-3 w-1/3 rounded bg-ink/10" />
+      <div className="h-9 w-28 rounded-full bg-ink/10" />
+    </div>
+  </div>
+);
 
+/** Cart drawer opened from the header: lines, a pinned subtotal and one way forward. */
 const CartPopup: React.FC<CartPopupProps> = ({ isOpen, onClose }) => {
-  const { state, removeFromCart, updateQuantity } = useCart();
+  const { state } = useCart();
   const navigate = useNavigate();
+  const reduce = useReducedMotion();
 
-  const handleCheckout = () => {
+  const count = state.totalItems;
+  const isEmpty = !state.isLoading && state.items.length === 0;
+  const hasItems = !state.isLoading && state.items.length > 0;
+
+  const go = (path: string) => {
     onClose();
-    navigate("/checkout");
+    navigate(path);
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
-        <SheetHeader>
-          <SheetTitle className="flex items-center">
-            <ShoppingBag className="mr-2 h-5 w-5" />
-            Your Cart
-          </SheetTitle>
-          <SheetDescription>Review your items before checkout</SheetDescription>
-        </SheetHeader>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/45 duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
+        <Dialog.Content
+          data-lenis-prevent
+          className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-[28rem] flex-col border-l border-ink/10 bg-ash shadow-hover ease-out-expo focus:outline-none data-[state=open]:animate-in data-[state=open]:slide-in-from-right data-[state=open]:duration-500 data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=closed]:duration-300"
+        >
+          <header className="flex shrink-0 items-center justify-between gap-4 border-b border-ink/10 py-3 pl-5 pr-3 md:pl-7 md:pr-5">
+            <div className="flex min-w-0 items-baseline gap-3">
+              <Dialog.Title className="font-display text-2xl font-bold tracking-[-0.02em]">Your cart</Dialog.Title>
+              {count > 0 && (
+                <span className="num text-[0.9375rem] text-steel">
+                  {count} {count === 1 ? "item" : "items"}
+                </span>
+              )}
+            </div>
+            <Dialog.Description className="sr-only">Review your items before checkout.</Dialog.Description>
+            <Dialog.Close
+              aria-label="Close cart"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink transition-[background-color,transform] duration-300 ease-out-expo hover:bg-ink/[0.07] active:scale-90"
+            >
+              <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+            </Dialog.Close>
+          </header>
 
-        <div className="flex flex-col flex-1 min-h-0 mt-6">
-          <div className="flex-1 overflow-y-auto pr-1">
+          <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 md:px-7">
             {state.isLoading ? (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
-                <p className="text-muted-foreground">Loading your cart...</p>
-              </div>
-            ) : state.items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <ShoppingBag className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="font-medium text-lg mb-2">Your cart is empty</h3>
-                <p className="text-muted-foreground mb-4">
-                  Looks like you haven't added any furniture to your cart yet.
-                </p>
-                <Button
-                  onClick={() => {
-                    onClose();
-                    navigate("/shop");
-                  }}
-                >
-                  Browse tables
-                </Button>
+              <div role="status" aria-label="Loading your cart">
+                <RowSkeleton />
+                <RowSkeleton />
               </div>
             ) : (
-              <div className="space-y-4">
-                {state.items.map((item) => (
-                  <div key={`${item.product.id}-${item.color || ""}`} className="bg-gray-50 rounded-lg p-3 sm:p-4 border">
-                    <div className="flex gap-3 sm:gap-4">
-                      <div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
-                        <img
-                          src={item.product.images?.[0] || "/placeholder.svg"}
-                          alt={item.product.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.onerror = null;
-                            target.src = "/placeholder.svg";
-                          }}
-                        />
-                      </div>
+              <>
+                <ul aria-label="Cart items">
+                  <AnimatePresence initial={false}>
+                    {state.items.map((item) => (
+                      <CartItem
+                        key={`${item.product.id}-${item.color || ""}`}
+                        product={item.product}
+                        quantity={item.quantity}
+                        color={item.color}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </ul>
 
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-base text-gray-900 mb-1 line-clamp-2">{item.product.name}</h3>
-                        {item.color && <p className="text-sm text-gray-500">Colour: {item.color}</p>}
-
-                        <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                          <div className="flex items-center border rounded-md bg-white">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.color)}
-                              disabled={item.quantity <= 1}
-                              aria-label="Decrease quantity"
-                            >
-                              <Minus className="h-3.5 w-3.5" />
-                            </Button>
-                            <span className="mx-2 text-sm w-6 text-center font-medium">{item.quantity}</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.color)}
-                              disabled={item.quantity >= MAX_ITEM_QUANTITY}
-                              aria-label="Increase quantity"
-                            >
-                              <Plus className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFromCart(item.product.id, item.color)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-
-                        <div className="mt-2 text-right">
-                          <div className="font-semibold text-primary">
-                            {formatPrice(item.product.price * item.quantity)}
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            {formatPrice(item.product.price)} × {item.quantity}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                {isEmpty && (
+                  <motion.div
+                    initial={reduce ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.15 }}
+                    className="flex flex-col items-center px-2 pb-10 pt-16 text-center"
+                  >
+                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-teak-tint text-teak-deep">
+                      <ShoppingBag className="h-7 w-7" strokeWidth={1.5} aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-6 text-xl">Your cart is empty</h3>
+                    <p className="mt-2 max-w-[30ch] text-steel">
+                      Tables you add will wait here until you are ready to order.
+                    </p>
+                    <Button size="lg" className="mt-7" onClick={() => go("/shop")}>
+                      Browse tables
+                      <ArrowRight aria-hidden="true" />
+                    </Button>
+                  </motion.div>
+                )}
+              </>
             )}
           </div>
 
-          {!state.isLoading && state.items.length > 0 && (
-            <div className="border-t pt-4 mt-4 space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">{formatPrice(state.totalPrice)}</span>
+          {hasItems && (
+            <footer className="shrink-0 border-t border-ink/15 bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 md:px-7">
+              <dl className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-4">
+                  <dt className="font-semibold">Subtotal</dt>
+                  <dd className="num font-display text-2xl font-bold tracking-[-0.02em]">{formatPrice(state.totalPrice)}</dd>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Delivery</span>
-                  <span className="text-sm font-medium">Calculated at checkout</span>
+                <div className="flex items-baseline justify-between gap-4 text-sm text-steel">
+                  <dt>Delivery</dt>
+                  <dd>Calculated at checkout</dd>
                 </div>
-              </div>
+              </dl>
 
-              <div className="space-y-2">
-                <Button className="w-full" size="lg" onClick={handleCheckout}>
-                  Checkout
-                </Button>
-                <Button variant="outline" className="w-full" onClick={onClose}>
-                  Continue Shopping
-                </Button>
+              <Button className="mt-5 h-14 w-full text-base" size="lg" onClick={() => go("/checkout")}>
+                Checkout
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <div className="mt-1 flex justify-center">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="inline-flex h-11 items-center rounded-full px-4 text-[0.9375rem] font-medium text-ink"
+                >
+                  <span className="link-draw">Keep shopping</span>
+                </button>
               </div>
-            </div>
+            </footer>
           )}
-        </div>
-      </SheetContent>
-    </Sheet>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
 

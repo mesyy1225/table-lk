@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Clock, XCircle, Loader2, Phone, MessageCircle, AlertTriangle } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { AlertTriangle, ArrowRight, Clock, Loader2, MessageCircle, Phone, X } from "lucide-react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
+import { PaymentMethodBadge, PaymentStatusBadge } from "@/components/PaymentBadges";
 import { Button } from "@/components/ui/button";
+import { EASE_OUT } from "@/components/motion";
+import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { formatPrice } from "@/lib/format";
 import { policyConfig, whatsappLink } from "@/lib/policyConfig";
+import { cn } from "@/lib/utils";
 
 type CardState = "checking" | "paid" | "failed" | "unconfirmed";
 
@@ -20,8 +26,6 @@ interface OrderStatusRow {
 const POLL_INTERVAL_MS = 3000;
 const POLL_ATTEMPTS = 10; // ~30 seconds
 
-const formatPrice = (price: number) => `LKR ${Number(price).toLocaleString("en-LK")}`;
-
 const fetchStatus = async (ref: string): Promise<OrderStatusRow | null> => {
   const { data, error } = await (supabase as any).rpc("get_order_status", { _order_ref: ref });
   if (error) throw error;
@@ -29,83 +33,64 @@ const fetchStatus = async (ref: string): Promise<OrderStatusRow | null> => {
   return row ?? null;
 };
 
-const ContactLine: React.FC<{ orderRef?: string | null }> = ({ orderRef }) => (
-  <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-    <Button variant="outline" asChild>
-      <a href={policyConfig.phoneHref}>
-        <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
-        {policyConfig.phone}
-      </a>
-    </Button>
-    <Button variant="outline" asChild>
-      <a
-        href={whatsappLink(orderRef ? `Hi TableLK, I have a question about my order ${orderRef}.` : "Hi TableLK, I have a question about my order.")}
-        target="_blank"
-        rel="noopener noreferrer"
+type Mark = "success" | "whatsapp" | "checking" | "pending" | "failed" | "cancelled";
+
+const MARK_TONE: Record<Mark, string> = {
+  success: "bg-teak text-ink",
+  whatsapp: "bg-teak-tint text-teak-deep",
+  checking: "border border-ink/15 text-ink",
+  pending: "bg-teak-tint text-teak-deep",
+  failed: "bg-destructive/10 text-destructive",
+  cancelled: "bg-ink/[0.07] text-ink",
+};
+
+const MARK_ICON = { whatsapp: MessageCircle, checking: Loader2, pending: Clock, failed: AlertTriangle, cancelled: X };
+
+/** The status mark above the heading. Only a success animates: the disc settles and the check draws in. */
+const StatusMark: React.FC<{ kind: Mark }> = ({ kind }) => {
+  const reduce = useReducedMotion();
+  const disc = cn("flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full", MARK_TONE[kind]);
+
+  if (kind === "success") {
+    return (
+      <motion.span
+        className={disc}
+        initial={reduce ? false : { scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, ease: EASE_OUT }}
+        aria-hidden="true"
       >
-        <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-        WhatsApp us
-      </a>
-    </Button>
-  </div>
-);
+        <svg
+          viewBox="0 0 24 24"
+          className="h-9 w-9"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <motion.path
+            d="M5 12.5l4.5 4.5L19 7.5"
+            initial={reduce ? false : { pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.25 }}
+          />
+        </svg>
+      </motion.span>
+    );
+  }
 
-const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
-  <div className="bg-primary/10 py-10 md:py-12">
-    <div className="container mx-auto px-6 text-center">
-      <h1 className="text-3xl md:text-4xl font-serif font-bold">{title}</h1>
-      {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
-    </div>
-  </div>
-);
+  const Icon = MARK_ICON[kind];
+  return (
+    <span className={disc} aria-hidden="true">
+      <Icon className={cn("h-8 w-8", kind === "checking" && "animate-spin")} strokeWidth={1.75} />
+    </span>
+  );
+};
 
-const RefBox: React.FC<{ orderRef: string }> = ({ orderRef }) => (
-  <div className="mx-auto mb-6 w-full max-w-sm rounded-lg border bg-card p-4 text-center">
-    <p className="text-xs uppercase tracking-wide text-muted-foreground">Order reference</p>
-    <p className="mt-1 break-all font-mono text-xl font-semibold">{orderRef}</p>
-    <p className="mt-1 text-xs text-muted-foreground">Please keep this for any questions about your order.</p>
-  </div>
-);
-
-const CancelView: React.FC<{ orderRef: string | null }> = ({ orderRef }) => (
-  <Layout>
-    <SEOHead title="Payment cancelled | TableLK" description="Your TableLK payment was cancelled." />
-    <Header title="Payment cancelled" />
-    <div className="container mx-auto max-w-xl px-6 py-12 text-center">
-      <XCircle className="mx-auto mb-4 h-14 w-14 text-muted-foreground" aria-hidden="true" />
-      <h2 className="text-2xl font-serif font-bold">Payment was cancelled, nothing was charged</h2>
-      <p className="mt-3 text-muted-foreground">
-        Your cart is still saved. You can try again, pay with Cash on delivery, or send us your order on WhatsApp.
-      </p>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button asChild size="lg">
-          <Link to="/checkout">Try checkout again</Link>
-        </Button>
-        <Button asChild size="lg" variant="outline">
-          <a
-            href={whatsappLink(
-              orderRef
-                ? `Hi TableLK, my card payment for order ${orderRef} was cancelled. I'd like to complete my order.`
-                : "Hi TableLK, I'd like to place an order."
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-            Order on WhatsApp
-          </a>
-        </Button>
-      </div>
-      <p className="mt-8 text-sm text-muted-foreground">
-        Need help? Call us on{" "}
-        <a href={policyConfig.phoneHref} className="font-medium text-foreground underline underline-offset-2">
-          {policyConfig.phone}
-        </a>{" "}
-        ({policyConfig.businessHours}).
-      </p>
-    </div>
-  </Layout>
-);
+const detailRow = "flex items-center justify-between gap-4 py-3.5";
+const quietLink =
+  "inline-flex h-11 items-center gap-2 rounded-full px-4 text-[0.9375rem] font-semibold text-ink transition-[background-color,transform] duration-300 ease-out-expo hover:bg-ink/[0.07] active:scale-[0.97]";
 
 const PaymentResult: React.FC = () => {
   const location = useLocation();
@@ -117,6 +102,7 @@ const PaymentResult: React.FC = () => {
 
   const [cardState, setCardState] = useState<CardState>("checking");
   const [row, setRow] = useState<OrderStatusRow | null>(null);
+  const { state: authState } = useAuth();
 
   // Card payments: poll the server until PayHere's notification marks the order paid.
   useEffect(() => {
@@ -147,117 +133,229 @@ const PaymentResult: React.FC = () => {
     };
   }, [isCancel, method, orderRef]);
 
-  if (isCancel) return <CancelView orderRef={orderRef} />;
+  const continueShopping = (primary: boolean) => (
+    <Button asChild size="lg" variant={primary ? "default" : "outline"}>
+      <Link to="/shop">
+        Continue shopping
+        {primary && <ArrowRight aria-hidden="true" />}
+      </Link>
+    </Button>
+  );
+  const myOrders = authState.isAuthenticated ? (
+    <Button asChild size="lg" variant="outline">
+      <Link to="/my-orders">View my orders</Link>
+    </Button>
+  ) : null;
 
-  const title = method === "card" && cardState === "paid" ? "Payment confirmed" : "Thank you for your order";
-
+  let seoTitle = method === "card" && cardState === "paid" ? "Payment confirmed" : "Thank you for your order";
+  let seoDescription = "Your TableLK order status.";
+  let mark: Mark;
+  let heading: string;
   let body: React.ReactNode;
-  if (method === "cod") {
+  let badge: React.ReactNode = null;
+  let actions: React.ReactNode = null;
+
+  if (isCancel) {
+    seoTitle = "Payment cancelled";
+    seoDescription = "Your TableLK payment was cancelled.";
+    mark = "cancelled";
+    heading = "Payment cancelled, nothing was charged";
+    body = <p>Your cart is still saved. You can try again, pay with cash on delivery, or send us your order on WhatsApp.</p>;
+    badge = <PaymentStatusBadge status="cancelled" />;
+    actions = (
+      <>
+        <Button asChild size="lg">
+          <Link to="/checkout">
+            Try checkout again
+            <ArrowRight aria-hidden="true" />
+          </Link>
+        </Button>
+        <Button asChild size="lg" variant="outline">
+          <a
+            href={whatsappLink(
+              orderRef
+                ? `Hi TableLK, my card payment for order ${orderRef} was cancelled. I'd like to complete my order.`
+                : "Hi TableLK, I'd like to place an order."
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle aria-hidden="true" />
+            Order on WhatsApp
+          </a>
+        </Button>
+      </>
+    );
+  } else if (method === "cod") {
+    mark = "success";
+    heading = "Your order has been placed";
     body = (
       <>
-        <CheckCircle2 className="mx-auto mb-4 h-14 w-14 text-green-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Your order has been placed</h2>
-        <p className="mt-3 text-muted-foreground">You'll pay in cash when your order is delivered.</p>
-        <ol className="mx-auto mt-6 max-w-md space-y-2 text-left text-sm text-muted-foreground list-decimal pl-5">
-          <li>We'll call or WhatsApp you within one working day to confirm your order and delivery date.</li>
-          <li>
-            Delivery usually takes {policyConfig.colomboDeliveryDays} in the Western Province and{" "}
-            {policyConfig.outstationDeliveryDays} elsewhere.
-          </li>
-          <li>Pay the delivery team in cash when your furniture arrives.</li>
+        <p>You'll pay in cash when your order is delivered.</p>
+        <ol className="mx-auto mt-6 max-w-[30rem] space-y-3 text-left text-base">
+          {[
+            "We'll call or WhatsApp you within one working day to confirm your order and delivery date.",
+            `Delivery usually takes ${policyConfig.colomboDeliveryDays} in the Western Province and ${policyConfig.outstationDeliveryDays} elsewhere.`,
+            "Pay the delivery team in cash when your furniture arrives.",
+          ].map((step, i) => (
+            <li key={i} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
+              <span className="num font-display font-bold text-teak-deep" aria-hidden="true">
+                {i + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
         </ol>
+      </>
+    );
+    badge = <PaymentMethodBadge method="cod" />;
+    actions = (
+      <>
+        {continueShopping(true)}
+        {myOrders}
       </>
     );
   } else if (method === "whatsapp") {
     const waUrl =
       navState.whatsappUrl ||
       whatsappLink(orderRef ? `Hi TableLK, I'd like to confirm my order ${orderRef}.` : "Hi TableLK, I'd like to place an order.");
+    mark = "whatsapp";
+    heading = "Finish your order on WhatsApp";
     body = (
+      <p>
+        We've opened WhatsApp with your order details. Press <span className="font-semibold text-ink">Send</span> so we
+        receive it. We'll reply to confirm the price, delivery date and payment.
+      </p>
+    );
+    badge = <PaymentMethodBadge method="whatsapp" />;
+    actions = (
       <>
-        <MessageCircle className="mx-auto mb-4 h-14 w-14 text-green-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Finish your order on WhatsApp</h2>
-        <p className="mt-3 text-muted-foreground">
-          We've opened WhatsApp with your order details. Press <span className="font-medium text-foreground">Send</span> so
-          we receive it — we'll reply to confirm the price, delivery date and payment.
-        </p>
-        <Button asChild size="lg" className="mt-6 bg-green-600 hover:bg-green-700">
+        <Button asChild size="lg">
           <a href={waUrl} target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+            <MessageCircle aria-hidden="true" />
             {navState.opened === false ? "Open WhatsApp" : "WhatsApp didn't open? Tap here"}
           </a>
         </Button>
+        {continueShopping(false)}
       </>
     );
   } else if (!orderRef) {
-    body = (
-      <>
-        <CheckCircle2 className="mx-auto mb-4 h-14 w-14 text-green-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Thank you</h2>
-        <p className="mt-3 text-muted-foreground">
-          If you completed a payment, we'll contact you shortly to confirm your order.
-        </p>
-      </>
-    );
+    mark = "success";
+    heading = "Thank you";
+    body = <p>If you completed a payment, we'll contact you shortly to confirm your order.</p>;
+    actions = continueShopping(true);
   } else if (cardState === "paid") {
+    mark = "success";
+    heading = "Your order is confirmed";
     body = (
+      <p>
+        {row?.total ? `We've received your payment of ${formatPrice(Number(row.total))}. ` : "We've received your payment. "}
+        We'll call or WhatsApp you to arrange delivery ({policyConfig.colomboDeliveryDays} in the Western Province,{" "}
+        {policyConfig.outstationDeliveryDays} elsewhere).
+      </p>
+    );
+    badge = <PaymentStatusBadge status="paid" />;
+    actions = (
       <>
-        <CheckCircle2 className="mx-auto mb-4 h-14 w-14 text-green-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Your order is confirmed</h2>
-        <p className="mt-3 text-muted-foreground">
-          {row?.total ? `We've received your payment of ${formatPrice(row.total)}. ` : "We've received your payment. "}
-          We'll call or WhatsApp you to arrange delivery ({policyConfig.colomboDeliveryDays} in the Western Province,{" "}
-          {policyConfig.outstationDeliveryDays} elsewhere).
-        </p>
+        {continueShopping(true)}
+        {myOrders}
       </>
     );
   } else if (cardState === "failed") {
+    mark = "failed";
+    heading = "Payment not completed";
     body = (
-      <>
-        <AlertTriangle className="mx-auto mb-4 h-14 w-14 text-amber-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Payment not completed</h2>
-        <p className="mt-3 text-muted-foreground">
-          Your bank or PayHere reported that this payment didn't go through. If money was deducted, it will be returned —
-          please contact us with your order reference.
-        </p>
-        <Button asChild size="lg" className="mt-6">
-          <Link to="/checkout">Try again</Link>
-        </Button>
-      </>
+      <p>
+        Your bank or PayHere reported that this payment didn't go through. If money was deducted, it will be returned.
+        Please contact us with your order reference.
+      </p>
+    );
+    badge = <PaymentStatusBadge status={row?.payment_status || "failed"} />;
+    actions = (
+      <Button asChild size="lg">
+        <Link to="/checkout">
+          Try again
+          <ArrowRight aria-hidden="true" />
+        </Link>
+      </Button>
     );
   } else if (cardState === "checking") {
-    body = (
-      <>
-        <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">Confirming your payment...</h2>
-        <p className="mt-3 text-muted-foreground">This usually takes a few seconds. Please don't close this page.</p>
-      </>
-    );
+    mark = "checking";
+    heading = "Confirming your payment";
+    body = <p>This usually takes a few seconds. Please don't close this page.</p>;
+    badge = <PaymentStatusBadge status="pending" />;
   } else {
+    mark = "pending";
+    heading = "We're confirming your payment";
     body = (
-      <>
-        <Clock className="mx-auto mb-4 h-14 w-14 text-amber-600" aria-hidden="true" />
-        <h2 className="text-2xl font-serif font-bold">We're confirming your payment</h2>
-        <p className="mt-3 text-muted-foreground">
-          It can take a little while for the bank to confirm. There's no need to pay again — you'll get a call or WhatsApp
-          from us once it's confirmed.
-        </p>
-      </>
+      <p>
+        It can take a little while for the bank to confirm. There's no need to pay again. You'll get a call or WhatsApp
+        from us once it's confirmed.
+      </p>
     );
+    badge = <PaymentStatusBadge status="pending" />;
+    actions = continueShopping(false);
   }
+
+  const showTotal = !isCancel && method === "card" && !!row?.total;
 
   return (
     <Layout>
-      <SEOHead title={`${title} | TableLK`} description="Your TableLK order status." />
-      <Header title={title} />
-      <div className="container mx-auto max-w-xl px-6 py-12 text-center" aria-live="polite">
-        {orderRef && <RefBox orderRef={orderRef} />}
-        {body}
-        <ContactLine orderRef={orderRef} />
-        <p className="mt-4 text-xs text-muted-foreground">{policyConfig.businessHours}</p>
-        <div className="mt-8">
-          <Button variant="link" asChild>
-            <Link to="/shop">Continue shopping</Link>
-          </Button>
+      <SEOHead title={`${seoTitle} | TableLK`} description={seoDescription} />
+      <div className="shell">
+        <div className="mx-auto flex max-w-[35rem] flex-col items-center pt-12 text-center md:pt-20" aria-live="polite">
+          <StatusMark key={mark} kind={mark} />
+          <h1 className="display-md mt-7">{heading}</h1>
+          <div className="mt-4 text-steel md:text-lg">{body}</div>
+
+          {orderRef && (
+            <div className="mt-9 w-full">
+              <dl className="divide-y divide-ink/10 border-y border-ink/15 text-left">
+                <div className={detailRow}>
+                  <dt className="shrink-0 text-steel">Order reference</dt>
+                  <dd className="num break-all text-right text-lg font-semibold">{orderRef}</dd>
+                </div>
+                {badge && (
+                  <div className={detailRow}>
+                    <dt className="text-steel">Payment</dt>
+                    <dd>{badge}</dd>
+                  </div>
+                )}
+                {showTotal && (
+                  <div className={detailRow}>
+                    <dt className="text-steel">Total</dt>
+                    <dd className="num font-semibold">{formatPrice(Number(row!.total))}</dd>
+                  </div>
+                )}
+              </dl>
+              <p className="mt-3 text-sm text-steel">Please keep this for any questions about your order.</p>
+            </div>
+          )}
+
+          {actions && <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">{actions}</div>}
+
+          <div className="mt-12 w-full border-t border-ink/10 pt-6">
+            <p className="text-sm text-steel">
+              Questions about your order? <span className="inline-block">We answer {policyConfig.businessHours.charAt(0).toLowerCase() + policyConfig.businessHours.slice(1)}.</span>
+            </p>
+            <div className="mt-2 flex flex-wrap justify-center gap-x-2">
+              <a href={policyConfig.phoneHref} className={quietLink}>
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                <span className="num">{policyConfig.phone}</span>
+              </a>
+              <a
+                href={whatsappLink(
+                  orderRef ? `Hi TableLK, I have a question about my order ${orderRef}.` : "Hi TableLK, I have a question about my order."
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={quietLink}
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                WhatsApp us
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

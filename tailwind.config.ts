@@ -13,7 +13,7 @@ export default {
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: { DEFAULT: '1.25rem', md: '2rem' },
 			screens: {
 				'2xl': '1400px'
 			}
@@ -53,6 +53,17 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				ash: 'hsl(var(--ash))',
+				board: 'hsl(var(--board))',
+				ink: 'hsl(var(--ink))',
+				steel: 'hsl(var(--steel))',
+				teak: {
+					DEFAULT: 'hsl(var(--teak))',
+					deep: 'hsl(var(--teak-deep))',
+					tint: 'hsl(var(--teak-tint))'
+				},
+				walnut: 'hsl(var(--walnut))',
+				navy: 'hsl(var(--navy))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -65,8 +76,10 @@ export default {
 				}
 			},
 			fontFamily: {
-				sans: ['Inter var', 'sans-serif'],
-				serif: ['Playfair Display', 'serif'],
+				sans: ['"Hanken Grotesk Variable"', 'system-ui', 'sans-serif'],
+				display: ['"Archivo Variable"', '"Hanken Grotesk Variable"', 'system-ui', 'sans-serif'],
+				// Older pages use font-serif for headings; it now maps to the display face.
+				serif: ['"Archivo Variable"', '"Hanken Grotesk Variable"', 'system-ui', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -126,13 +139,19 @@ export default {
 				scale: 'scale 0.3s ease-out',
 				zoomIn: 'zoomIn 0.3s ease-out',
 				floatUp: 'floatUp 3s ease-in-out infinite',
+				marquee: 'marquee var(--marquee-duration, 40s) linear infinite',
+			},
+			transitionTimingFunction: {
+				'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+				'in-out-quart': 'cubic-bezier(0.65, 0, 0.35, 1)',
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 			},
 			boxShadow: {
-				'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
-				'hover': '0 10px 30px rgba(0, 0, 0, 0.08)',
+				'soft': '0 1px 2px hsl(220 10% 10% / 0.05), 0 8px 24px -8px hsl(220 10% 10% / 0.10)',
+				'hover': '0 2px 4px hsl(220 10% 10% / 0.06), 0 18px 40px -12px hsl(220 10% 10% / 0.22)',
+				'chip': '0 1px 1px hsl(220 10% 10% / 0.10), 0 10px 22px -10px hsl(220 10% 10% / 0.45)',
 			},
 		}
 	},

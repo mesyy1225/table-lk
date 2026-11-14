@@ -22,7 +22,7 @@ const AdminDashboard: React.FC = () => {
   if (state.isLoading || loading) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-12 text-center text-muted-foreground">Loading...</div>
+        <div className="shell py-12 text-center text-steel" role="status">Loading...</div>
       </Layout>
     );
   }
@@ -38,15 +38,15 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 p-2 rounded-full">
+      <div className="shell py-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="shrink-0 rounded-full bg-primary/10 p-2">
               <Shield className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-sm text-muted-foreground break-all">Signed in as {state.user?.email}</p>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold">Admin dashboard</h1>
+              <p className="break-all text-sm text-steel">Signed in as {state.user?.email}</p>
             </div>
           </div>
           <Button variant="outline" onClick={handleLogout}>
@@ -55,7 +55,8 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <Tabs defaultValue="products">
-          <TabsList className="mb-6 w-full sm:w-auto justify-start overflow-x-auto">
+          {/* One scrolling row of 44px tabs on phones; the list never wraps or squeezes. */}
+          <TabsList className="mb-6 flex h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl p-1 sm:inline-flex sm:w-auto [&>button]:min-h-[2.75rem] [&>button]:shrink-0 [&>button]:rounded-lg [&>button]:px-4 sm:[&>button]:min-h-[2.25rem]">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>

@@ -12,7 +12,7 @@ const Mark: React.FC<{ children: React.ReactNode; className?: string; label: str
     role="img"
     aria-label={label}
     className={cn(
-      "inline-flex h-6 items-center justify-center rounded border bg-white px-1.5 text-[10px] font-bold leading-none",
+      "inline-flex h-9 items-center justify-center rounded-md border border-ink/15 bg-white px-2.5 text-[0.6875rem] font-bold leading-none",
       className
     )}
   >
@@ -22,8 +22,8 @@ const Mark: React.FC<{ children: React.ReactNode; className?: string; label: str
 
 const CardMarks: React.FC = () => (
   <>
-    <Mark label="Visa" className="border-gray-200 italic tracking-tight text-[#1a1f71] text-xs">VISA</Mark>
-    <Mark label="Mastercard" className="border-gray-200 px-1">
+    <Mark label="Visa" className="text-xs italic tracking-tight text-[#1a1f71]">VISA</Mark>
+    <Mark label="Mastercard" className="px-1.5">
       <svg viewBox="0 0 32 20" className="h-4 w-auto" aria-hidden="true">
         <circle cx="12" cy="10" r="8" fill="#eb001b" />
         <circle cx="20" cy="10" r="8" fill="#f79e1b" fillOpacity="0.9" />
@@ -39,19 +39,20 @@ const PaymentBadges: React.FC<PaymentBadgesProps> = ({ variant = "light", classN
   const dark = variant === "dark";
 
   return (
-    <div className={cn("space-y-2", className)}>
-      <p className={cn("flex items-center gap-1.5 text-xs font-medium", dark ? "text-white/80" : "text-muted-foreground")}>
+    <div className={cn("space-y-2.5", className)}>
+      <p className={cn("flex items-center gap-1.5 text-[0.8125rem] font-medium", dark ? "text-white/70" : "text-steel")}>
         <Lock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         Secure payment by PayHere
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {!bannerFailed ? (
-          <span className={cn("inline-flex max-w-full rounded", dark && "bg-white p-1")}>
+          <span className={cn("inline-flex h-9 max-w-full items-center rounded-md bg-white px-2", !dark && "border border-ink/15")}>
             <img
               src="https://www.payhere.lk/downloads/images/payhere_long_banner.png"
               alt="PayHere secure payments: Visa, Mastercard, American Express"
               loading="lazy"
-              className="h-auto max-h-9 w-auto max-w-full object-contain"
+              decoding="async"
+              className="h-auto max-h-7 w-auto max-w-full object-contain"
               onError={() => setBannerFailed(true)}
             />
           </span>
@@ -60,7 +61,7 @@ const PaymentBadges: React.FC<PaymentBadgesProps> = ({ variant = "light", classN
         )}
         <Mark
           label="Cash on delivery"
-          className={cn("gap-1 font-semibold", dark ? "border-white/30 bg-white/10 text-white" : "border-green-200 bg-green-50 text-green-700")}
+          className={cn("gap-1.5 text-xs font-semibold", dark ? "border-white/25 bg-white/10 text-white" : "text-ink")}
         >
           <Banknote className="h-3.5 w-3.5" aria-hidden="true" />
           Cash on delivery
@@ -74,14 +75,24 @@ export default PaymentBadges;
 
 // ---- Order payment status / method badges (orders pages) ----
 
+/** Status colours are tints of the status hue with dark text, so each stays readable on ash and on white. */
+const TONES = {
+  good: "border-emerald-700/25 bg-emerald-50 text-emerald-900",
+  wait: "border-amber-700/30 bg-amber-50 text-amber-900",
+  bad: "border-red-700/25 bg-red-50 text-red-800",
+  info: "border-sky-700/25 bg-sky-50 text-sky-900",
+  quiet: "border-ink/15 bg-ink/[0.04] text-steel",
+  plain: "border-ink/20 bg-white text-ink",
+} as const;
+
 const STATUS_STYLES: Record<string, string> = {
-  paid: "bg-green-100 text-green-800 border-green-200",
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  unpaid: "bg-gray-100 text-gray-700 border-gray-200",
-  failed: "bg-red-100 text-red-800 border-red-200",
-  cancelled: "bg-gray-100 text-gray-600 border-gray-200",
-  refunded: "bg-blue-100 text-blue-800 border-blue-200",
-  chargedback: "bg-red-100 text-red-800 border-red-200",
+  paid: TONES.good,
+  pending: TONES.wait,
+  unpaid: TONES.quiet,
+  failed: TONES.bad,
+  cancelled: TONES.quiet,
+  refunded: TONES.info,
+  chargedback: TONES.bad,
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -100,18 +111,40 @@ const METHOD_LABELS: Record<string, string> = {
   whatsapp: "WhatsApp",
 };
 
-const pill = "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium whitespace-nowrap";
+const ORDER_STYLES: Record<string, string> = {
+  pending: TONES.wait,
+  confirmed: TONES.info,
+  processing: TONES.info,
+  shipped: TONES.info,
+  delivered: TONES.good,
+  completed: TONES.good,
+  cancelled: TONES.quiet,
+  refunded: TONES.quiet,
+};
+
+const pill = "inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold leading-none";
+const dot = <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />;
 
 export const PaymentStatusBadge: React.FC<{ status?: string | null; className?: string }> = ({ status, className }) =>
   status ? (
     <span className={cn(pill, STATUS_STYLES[status] || STATUS_STYLES.unpaid, className)}>
+      {dot}
       {STATUS_LABELS[status] || status}
     </span>
   ) : null;
 
 export const PaymentMethodBadge: React.FC<{ method?: string | null; className?: string }> = ({ method, className }) =>
   method ? (
-    <span className={cn(pill, "bg-background text-foreground border-border", className)}>
+    <span className={cn(pill, TONES.plain, className)}>
       {METHOD_LABELS[method] || method}
+    </span>
+  ) : null;
+
+/** Order progress (pending, confirmed, shipped, delivered...). Unknown values are shown as written. */
+export const OrderStatusBadge: React.FC<{ status?: string | null; className?: string }> = ({ status, className }) =>
+  status ? (
+    <span className={cn(pill, "capitalize", ORDER_STYLES[status] || TONES.quiet, className)}>
+      {dot}
+      {status}
     </span>
   ) : null;

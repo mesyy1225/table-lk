@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { AuthError, AuthShell, PasswordField } from "./Login";
 
 // Map admin username to a stable email used in Supabase Auth
 const usernameToEmail = (username: string) => {
@@ -23,6 +22,7 @@ const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { state } = useAuth();
   const { isAdmin, loading } = useIsAdmin();
@@ -75,54 +75,48 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[60vh]">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
-              <Shield className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
-            <CardDescription>Restricted access. Authorized personnel only.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <div className="bg-destructive/10 text-destructive p-3 rounded-md mb-4 text-sm">
-                {error}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  autoComplete="username"
-                  disabled={submitting}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  disabled={submitting}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting ? "Signing in..." : "Sign In"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </Layout>
+    <AuthShell title="Admin sign in" help="Restricted access. Authorized personnel only.">
+      <AuthError message={error} />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <Input
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            disabled={submitting}
+            aria-invalid={!!error}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <PasswordField
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            disabled={submitting}
+            aria-invalid={!!error}
+            visible={showPassword}
+            onToggle={() => setShowPassword(!showPassword)}
+          />
+        </div>
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+          {submitting ? (
+            <>
+              <Loader2 className="animate-spin" /> Signing in
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </Button>
+      </form>
+    </AuthShell>
   );
 };
 

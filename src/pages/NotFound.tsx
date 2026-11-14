@@ -1,5 +1,8 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { ArrowRight } from "lucide-react";
+import Layout from "@/components/Layout";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,16 +14,36 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
+  useEffect(() => {
+    const previous = document.title;
+    document.title = "Page not found - TableLK";
+    return () => {
+      document.title = previous;
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <Link to="/" className="text-blue-500 hover:text-blue-700 underline" aria-label="Go back to home">
-          Return to Home
-        </Link>
-      </div>
-    </div>
+    <Layout>
+      <section className="shell py-16 md:py-28">
+        <h1 className="display-lg max-w-[14ch]">We can't find that page.</h1>
+        <p className="mt-5 max-w-[52ch] text-steel md:text-lg">
+          There is nothing at <span className="break-all font-medium text-ink">{location.pathname}</span>. The link may
+          be old, or the address may have a typing mistake.
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button asChild size="lg">
+            <Link to="/shop">
+              Shop tables
+              <ArrowRight />
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link to="/">Go to the home page</Link>
+          </Button>
+        </div>
+        <p className="num mt-10 border-t border-ink/15 pt-5 text-sm text-steel">Error 404</p>
+      </section>
+    </Layout>
   );
 };
 
