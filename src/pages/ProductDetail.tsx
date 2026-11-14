@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { policyConfig } from "@/lib/policyConfig";
 import { useProduct } from "@/hooks/useProducts";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -254,6 +255,12 @@ const ProductDetail: React.FC = () => {
               <span className="font-medium text-green-600 mr-2">💳</span>
               <span className="text-sm font-medium">Cash on Delivery (COD) Available!</span>
             </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Island-wide delivery ·{" "}
+              <Link to="/return-policy" className="underline underline-offset-2 hover:text-foreground">{policyConfig.returnWindowDays}-day returns</Link>{" "}
+              on standard items ·{" "}
+              <Link to="/shipping-policy" className="underline underline-offset-2 hover:text-foreground">Delivery info</Link>
+            </p>
           </div>
         </div>
         

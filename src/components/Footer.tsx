@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { policyLinks } from "@/components/PolicyPage";
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react";
 const Footer: React.FC = () => {
   const { get } = useSiteContent();
@@ -55,26 +56,13 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-semibold">Customer Service</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/shipping-policy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Shipping Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/returns" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
+              {policyLinks.map((l) => (
+                <li key={l.path}>
+                  <Link to={l.path} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                    {l.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -100,6 +88,7 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 text-center text-primary-foreground/70 text-sm">
           <p>© {new Date().getFullYear()} TableLK. All rights reserved.</p>
+          <p className="mt-2">Secure card payments by PayHere · Visa · Mastercard · American Express · Cash on delivery</p>
         </div>
       </div>
     </footer>;
