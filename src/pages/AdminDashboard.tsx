@@ -1,3 +1,4 @@
+import SEOHead from "@/components/SEOHead";
 import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -38,6 +39,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <Layout>
+      <SEOHead title="Admin | TableLK" noindex />
       <div className="shell py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">

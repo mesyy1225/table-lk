@@ -1,3 +1,4 @@
+import SEOHead from "@/components/SEOHead";
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { ArrowRight, PackageOpen } from "lucide-react";
@@ -159,6 +160,7 @@ const MyOrders: React.FC = () => {
 
   return (
     <Layout>
+      <SEOHead title="My orders | TableLK" noindex />
       <div className="shell pt-8 md:pt-12">
         <div className="mx-auto max-w-3xl">
           <h1 className="display-lg">My orders</h1>

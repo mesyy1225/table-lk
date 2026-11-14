@@ -1,3 +1,4 @@
+import { routeSeo } from "@/lib/seo";
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
@@ -99,11 +100,7 @@ const Contact: React.FC = () => {
 
   return (
     <Layout>
-      <SEOHead
-        title="Contact TableLK - Office & Dining Tables, Sri Lanka"
-        description={`Contact TableLK for orders, custom sizes and delivery questions. Call or WhatsApp ${policyConfig.phone}, or send us a message.`}
-        canonical={`${policyConfig.website}/contact`}
-      />
+      <SEOHead {...routeSeo("/contact")} />
 
       <header className="shell pb-8 pt-10 md:pb-12 md:pt-16">
         <h1 className="display-lg">Contact us</h1>

@@ -7,9 +7,14 @@ interface SEOHeadProps {
   keywords?: string;
   ogImage?: string;
   canonical?: string;
+  /** schema.org structured data for this page (one object or several). */
+  jsonLd?: object | object[];
+  /** Keep this page out of search results (checkout, account and result pages). */
+  noindex?: boolean;
 }
 
 const SITE = policyConfig.website.replace(/\/+$/, ""); // https://www.tablelk.com
+const JSON_LD_ID = "page-jsonld";
 
 /**
  * Turns any canonical/og URL into an absolute URL on the canonical www domain:
@@ -36,18 +41,35 @@ const setMeta = (selector: string, content: string) => {
   if (el) el.setAttribute("content", content);
 };
 
+/** Creates the tag when missing, so pages can add a robots rule the base HTML doesn't carry. */
+const upsertMeta = (name: string, content: string) => {
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+};
+
 const SEOHead: React.FC<SEOHeadProps> = ({
-  title = "TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka",
-  description = "TableLK - Premium office tables, desks & custom furniture in Sri Lanka. Quality craftsmanship, modern designs, affordable prices. Order now!",
-  keywords = "table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture",
+  title = "Office Tables in Sri Lanka, Made to Your Size | TableLK",
+  description = "Office tables, computer tables and dining tables made in Sri Lanka by TableLK. Custom sizes, workshop prices, island-wide delivery. Order online or on WhatsApp.",
+  keywords = "office table Sri Lanka, tables Sri Lanka, computer table, dining table, custom size table, TableLK",
   ogImage = "/lovable-uploads/e7511338-4de1-4aea-a3be-10f3a6b41823.png",
   canonical,
+  jsonLd,
+  noindex = false,
 }) => {
+  const jsonLdText = jsonLd ? JSON.stringify(jsonLd) : "";
+
   useEffect(() => {
     document.title = title;
 
+    setMeta('meta[name="title"]', title);
     setMeta('meta[name="description"]', description);
     setMeta('meta[name="keywords"]', keywords);
+    upsertMeta("robots", noindex ? "noindex, nofollow" : "index, follow");
 
     // Open Graph
     const imageUrl = toCanonicalUrl(ogImage);
@@ -71,7 +93,17 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     canonicalLink.setAttribute("href", canonicalUrl);
     setMeta('meta[property="og:url"]', canonicalUrl);
     setMeta('meta[property="twitter:url"]', canonicalUrl);
-  }, [title, description, keywords, ogImage, canonical]);
+
+    // Page-level structured data: one script tag, replaced on every page.
+    document.getElementById(JSON_LD_ID)?.remove();
+    if (jsonLdText) {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = JSON_LD_ID;
+      script.textContent = jsonLdText;
+      document.head.appendChild(script);
+    }
+  }, [title, description, keywords, ogImage, canonical, jsonLdText, noindex]);
 
   return null;
 };

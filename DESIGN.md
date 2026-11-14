@@ -20,7 +20,7 @@ Tokens are HSL triplets in `src/index.css`, exposed to Tailwind in `tailwind.con
 | `teak` | `28 58% 52%` | Brand colour: primary call to action, bands, badges. Text on teak is `ink` |
 | `teak-deep` | `24 62% 33%` | Teak for text, links and focus rings on light grounds |
 | `teak-tint` | `32 48% 88%` | Hover and accent fill |
-| `walnut` | `22 30% 15%` | Dark band |
+| `walnut` | `22 30% 15%` | Reserve dark wood tone; dark bands use `.mat-ink` (navy) |
 
 Material fills: `.mat-teak`, `.mat-walnut`, `.mat-ash`, `.mat-white`, `.mat-black`, `.mat-ink`. On teak or walnut, secondary text is a tint of the ground (`text-ink/75`, `text-white/70`), never grey.
 
@@ -36,7 +36,7 @@ Material fills: `.mat-teak`, `.mat-walnut`, `.mat-ash`, `.mat-white`, `.mat-blac
 - `.shell` is the page gutter and max width; `.section` is the vertical rhythm.
 - Buttons are pills (`Button` variants: `default` ink, `teak`, `outline`, `ghost`). Fields are 48px high with `rounded-xl`. Photos use `rounded-xl` or `rounded-2xl`.
 - Structure comes from hairline rules (`border-ink/10`, `/15`) and space, not boxes. No nested cards.
-- `.chip` is the sample chip: a rounded slab with a punched hole, used for finishes and the home photo fan.
+- `.chip` is the sample chip: a rounded slab with a punched hole, used for finish choices.
 - Header height is `--header-h`. `Layout` offsets every page except home with `pt-header`; sticky panels use `top-header`; anchors use `scroll-mt-header`.
 
 ## Motion
@@ -44,7 +44,7 @@ Material fills: `.mat-teak`, `.mat-walnut`, `.mat-ash`, `.mat-white`, `.mat-blac
 Primitives live in `src/components/motion.tsx`: `Reveal`, `RevealGroup`/`RevealItem`, `SplitText`, `Wipe`, `Parallax`, `Marquee`. One easing curve, exponential ease-out (`ease-out-expo`), 300 ms for hovers.
 
 - One entrance per section. Task screens (checkout, login, forms, orders, admin) have no scroll entrances, only state transitions and press feedback.
-- Signature moments: the hero photo wipe driven by the chip fan, and the live 3D table (`TableScene`) that glides to new sizes and colours.
+- Signature moments: the hero photo wipe, driven by slim progress lines, arrows or a sideways swipe, and the live 3D table (`TableScene`) that glides to new sizes and colours.
 - Smooth wheel scrolling is Lenis (`SmoothScroll.tsx`). Scrollable overlays need `data-lenis-prevent`.
 - Everything respects `prefers-reduced-motion`.
 

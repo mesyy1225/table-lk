@@ -1,3 +1,4 @@
+import { routeSeo } from "@/lib/seo";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -204,12 +205,7 @@ const DesignTable: React.FC = () => {
 
   return (
     <Layout>
-      <SEOHead
-        title="Design your table in 3D - TableLK Sri Lanka"
-        description="Design a custom table online: choose the top finish, frame colour, leg style and exact size, see it in 3D, and send the order to TableLK. Made in Sri Lanka, delivered island-wide."
-        keywords="custom table Sri Lanka, table designer, custom size table, made to order table, office table custom size, TableLK"
-        canonical={`${policyConfig.website}/design`}
-      />
+      <SEOHead {...routeSeo("/design")} />
 
       <div className="lg:shell lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(23rem,0.7fr)] lg:items-start lg:gap-12 lg:pt-8 xl:gap-16">
         {/* The model. On phones it stays pinned to the top of the screen while the controls scroll under it. */}

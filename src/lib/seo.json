@@ -1,0 +1,56 @@
+{
+  "/": {
+    "title": "Office Tables in Sri Lanka, Made to Your Size | TableLK",
+    "description": "Office tables, computer tables and dining tables made in Sri Lanka by TableLK. Custom sizes, workshop prices, island-wide delivery. Order online or on WhatsApp.",
+    "priority": "1.0",
+    "changefreq": "weekly"
+  },
+  "/shop": {
+    "title": "Office, Computer & Dining Tables for Sale in Sri Lanka | TableLK",
+    "description": "Shop office tables, computer tables, L-shaped desks and dining tables with prices in rupees. Made in Sri Lanka, delivered island-wide. Card or cash on delivery.",
+    "priority": "0.9",
+    "changefreq": "daily"
+  },
+  "/design": {
+    "title": "Design a Custom Size Table in 3D | TableLK Sri Lanka",
+    "description": "Design a custom table online: choose the top finish, frame colour and exact size, see it in 3D and send the order to TableLK. Made in Sri Lanka, delivered island-wide.",
+    "priority": "0.9",
+    "changefreq": "monthly"
+  },
+  "/about": {
+    "title": "About TableLK | Table Manufacturer in Bandaragama, Sri Lanka",
+    "description": "TableLK builds office, computer and dining tables in its own workshop in Bandaragama, Sri Lanka: melamine board tops on powder-coated steel frames, made to order.",
+    "priority": "0.7",
+    "changefreq": "monthly"
+  },
+  "/contact": {
+    "title": "Contact TableLK | Office & Dining Tables, Sri Lanka",
+    "description": "Call, WhatsApp or message TableLK about office tables, custom sizes and bulk orders. Workshop in Bandaragama, delivery anywhere in Sri Lanka.",
+    "priority": "0.7",
+    "changefreq": "monthly"
+  },
+  "/terms-and-conditions": {
+    "title": "Terms & Conditions | TableLK",
+    "description": "The terms that apply when you order tables from TableLK: prices, orders, payment, delivery, returns and your account.",
+    "priority": "0.3",
+    "changefreq": "yearly"
+  },
+  "/privacy-policy": {
+    "title": "Privacy Policy | TableLK",
+    "description": "How TableLK collects, uses and protects your personal information when you browse or order.",
+    "priority": "0.3",
+    "changefreq": "yearly"
+  },
+  "/return-policy": {
+    "title": "Return & Refund Policy | TableLK",
+    "description": "How returns, refunds and cancellations work for tables ordered from TableLK.",
+    "priority": "0.3",
+    "changefreq": "yearly"
+  },
+  "/shipping-policy": {
+    "title": "Delivery Policy | TableLK",
+    "description": "Delivery areas, delivery times and charges for TableLK tables across Sri Lanka.",
+    "priority": "0.3",
+    "changefreq": "yearly"
+  }
+}

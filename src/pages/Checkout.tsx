@@ -428,7 +428,7 @@ const Checkout: React.FC = () => {
 
   const frame = (children: React.ReactNode) => (
     <Layout>
-      <SEOHead title="Checkout | TableLK" description="Secure checkout for TableLK furniture orders." />
+      <SEOHead title="Checkout | TableLK" description="Secure checkout for TableLK furniture orders." noindex />
       <div className="shell pt-8 md:pt-12">
         <h1 className="display-lg">Checkout</h1>
         <p className="mt-3 flex items-center gap-2 text-[0.9375rem] text-steel">

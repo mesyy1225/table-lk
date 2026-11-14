@@ -1,3 +1,4 @@
+import { itemListLd, routeSeo } from "@/lib/seo";
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -51,12 +52,7 @@ const Shop: React.FC = () => {
 
   return (
     <Layout>
-      <SEOHead
-        title="Shop Office Tables & Furniture Online - TableLK Sri Lanka"
-        description="Buy premium office tables & furniture online at TableLK. Modern desks, custom furniture with island-wide delivery in Sri Lanka. WhatsApp support!"
-        keywords="buy table online Sri Lanka, office table price, desk for sale, furniture shop, online furniture store, TableLK shop, hybrid table, ergonomic desk, custom table order"
-        canonical={`${policyConfig.website}/shop`}
-      />
+      <SEOHead {...routeSeo("/shop")} jsonLd={itemListLd(products)} />
 
       {/* A short title so the tables are the first thing on a phone. The header offset comes from Layout. */}
       <header className="shell pb-7 pt-8 md:pb-10 md:pt-14">

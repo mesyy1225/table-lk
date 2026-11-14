@@ -1,3 +1,5 @@
+import { breadcrumbLd, productLd, productSeo } from "@/lib/seo";
+import SEOHead from "@/components/SEOHead";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -308,6 +310,7 @@ const ProductDetailView: React.FC<{ id?: string }> = ({ id }) => {
   if (!product) {
     return (
       <Layout>
+        <SEOHead title="Table not found | TableLK" noindex />
         <div className="shell flex min-h-[55vh] flex-col items-start justify-center py-16">
           <h1 className="display-lg max-w-[14ch]">We could not find that table</h1>
           <p className="mt-4 max-w-[48ch] text-steel md:text-lg">
@@ -362,6 +365,18 @@ const ProductDetailView: React.FC<{ id?: string }> = ({ id }) => {
 
   return (
     <Layout>
+      <SEOHead
+        {...productSeo(product)}
+        ogImage={validatedImages[0]}
+        jsonLd={[
+          productLd(product, reviews),
+          breadcrumbLd([
+            { name: "Home", path: "/" },
+            { name: "Shop", path: "/shop" },
+            { name: product.name, path: `/product/${product.id}` },
+          ]),
+        ]}
+      />
       <div className="shell pt-5 md:pt-8">
         <nav aria-label="Breadcrumb" className="mb-4 flex min-h-11 items-center gap-1.5 text-sm text-steel md:mb-6">
           <Link to="/shop" className="link-draw font-medium text-ink">

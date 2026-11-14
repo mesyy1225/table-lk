@@ -1,3 +1,4 @@
+import { routeSeo } from "@/lib/seo";
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -57,11 +58,7 @@ const arrowLink = "group inline-flex min-h-[2.75rem] items-center gap-2 font-sem
 const About: React.FC = () => {
   return (
     <Layout>
-      <SEOHead
-        title="About TableLK - Table Manufacturer in Bandaragama, Sri Lanka"
-        description="TableLK designs and builds office, study and dining tables in Bandaragama, Sri Lanka, with island-wide delivery. Meet the team behind every table."
-        canonical={`${policyConfig.website}/about`}
-      />
+      <SEOHead {...routeSeo("/about")} />
 
       {/* Opening statement and the workshop */}
       <section className="shell pt-10 md:pt-16">
@@ -142,7 +139,7 @@ const About: React.FC = () => {
       </section>
 
       {/* Sold direct: how you pay and how long it takes */}
-      <section className="mat-walnut section text-white">
+      <section className="mat-ink section text-white">
         <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-6">
             <SplitText text="No showroom between you and the people who build it." className="display-lg max-w-[15ch]" />

@@ -1,3 +1,5 @@
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { HOME_FAQS, faqLd, routeSeo } from "@/lib/seo";
 import React, { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useInView } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -11,7 +13,7 @@ import TableSketch from "@/components/TableSketch";
 // three.js is large: the 3D model loads only when this section scrolls into view.
 const TableScene = lazy(() => import("@/components/TableScene"));
 import ReviewCard, { Stars } from "@/components/ReviewCard";
-import { Marquee, Parallax, Reveal, RevealGroup, RevealItem, SplitText, Wipe } from "@/components/motion";
+import { Parallax, Reveal, RevealGroup, RevealItem, SplitText, Wipe } from "@/components/motion";
 import { supabase } from "@/integrations/supabase/client";
 import { policyConfig } from "@/lib/policyConfig";
 import { PHOTOS } from "@/lib/photos";
@@ -21,24 +23,23 @@ import { useProducts } from "@/hooks/useProducts";
 import { cn } from "@/lib/utils";
 
 const FACTS = [
-  "Made in our Bandaragama workshop",
-  "Any size, made to order",
-  "Workshop prices, sold direct",
-  "Delivered anywhere in Sri Lanka",
-  "Card, cash on delivery or WhatsApp",
+  { title: "Made in Bandaragama", detail: "Built in our own workshop" },
+  { title: "Any size", detail: "Made to order, to the inch" },
+  { title: "Workshop prices", detail: "Sold direct, no showroom" },
+  { title: "Island-wide delivery", detail: "Card, cash on delivery or WhatsApp" },
 ];
 
-/** Moving strip of the plain facts, printed on teak. */
+/** The plain facts, set as one quiet ruled row under the hero. */
 const FactsStrip: React.FC = () => (
-  <section aria-label="Why Table LK" className="mat-teak border-y border-ink/15 text-ink">
-    <Marquee duration={44} className="py-4 md:py-5">
+  <section aria-label="Why Table LK" className="border-b border-ink/10">
+    <ul className="shell grid grid-cols-2 gap-x-6 gap-y-6 py-8 md:py-10 lg:grid-cols-4 lg:gap-x-10">
       {FACTS.map((fact) => (
-        <span key={fact} className="flex items-center font-display text-lg font-semibold tracking-[-0.02em] md:text-[1.375rem]">
-          <span className="whitespace-nowrap px-6 md:px-9">{fact}</span>
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full border-2 border-ink/70" />
-        </span>
+        <li key={fact.title} className="border-l border-ink/15 pl-4">
+          <p className="font-semibold leading-snug">{fact.title}</p>
+          <p className="mt-1 text-sm text-steel">{fact.detail}</p>
+        </li>
       ))}
-    </Marquee>
+    </ul>
   </section>
 );
 
@@ -82,7 +83,7 @@ const DesignTeaser: React.FC = () => {
   const sketch = <TableSketch top={top.hex} frame={frame.hex} className="h-full w-full" />;
 
   return (
-    <section className="mat-walnut section overflow-hidden text-white">
+    <section className="mat-ink section overflow-hidden text-white">
       <div className="shell grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
         <div>
           <SplitText text="Pick a top. Pick a frame. Give us the size." className="display-lg max-w-[14ch]" />
@@ -234,7 +235,7 @@ const ReviewsSection: React.FC = () => {
   );
 
   return (
-    <section className="section border-t border-ink/10 bg-secondary/60">
+    <section className="section border-t border-ink/10">
       <div className="shell">
         <div className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
@@ -270,6 +271,38 @@ const ReviewsSection: React.FC = () => {
     </section>
   );
 };
+
+/** Questions customers ask before ordering. The same text is published as FAQ data for search engines. */
+const FaqSection: React.FC = () => (
+  <section className="section border-t border-ink/10">
+    <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div className="lg:col-span-4">
+        <SplitText text="Questions before you order" className="display-lg max-w-[12ch]" />
+        <Reveal delay={0.1}>
+          <p className="mt-5 max-w-[40ch] text-steel md:text-lg">
+            Something else?{" "}
+            <Link to="/contact" className="font-semibold text-ink underline decoration-teak-deep underline-offset-4">
+              Ask us on the contact page
+            </Link>
+            .
+          </p>
+        </Reveal>
+      </div>
+      <Reveal className="lg:col-span-8">
+        <Accordion type="single" collapsible className="border-t border-ink/15">
+          {HOME_FAQS.map((faq, i) => (
+            <AccordionItem key={faq.q} value={`faq-${i}`} className="border-b border-ink/15">
+              <AccordionTrigger className="gap-6 py-5 text-left font-display text-lg font-semibold tracking-[-0.015em] hover:no-underline md:text-xl">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="max-w-[62ch] pb-6 text-base text-steel">{faq.a}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Reveal>
+    </div>
+  </section>
+);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -312,12 +345,12 @@ const NewsletterSection: React.FC = () => {
           : "");
 
   return (
-    <section className="mat-teak text-ink">
+    <section className="border-t border-ink/10 bg-secondary/70">
       <div className="shell grid gap-8 py-14 md:py-20 lg:grid-cols-2 lg:items-end lg:gap-16">
         <div>
           <SplitText text="New tables and offers, by email." className="display-lg max-w-[13ch]" />
           <Reveal delay={0.1}>
-            <p className="mt-5 max-w-[44ch] text-ink/80 md:text-lg">
+            <p className="mt-5 max-w-[44ch] text-steel md:text-lg">
               A short email when we add a table or run an offer. Nothing else.
             </p>
           </Reveal>
@@ -341,12 +374,12 @@ const NewsletterSection: React.FC = () => {
               }}
               aria-invalid={!!validationError}
               aria-describedby="newsletter-status"
-              className="h-14 min-w-0 flex-1 rounded-full border border-ink/35 bg-white/25 px-6 text-base text-ink placeholder:text-ink/60 transition-colors duration-300 focus:border-ink focus:bg-white/45 focus:outline-none"
+              className="h-14 min-w-0 flex-1 rounded-full border border-input bg-white px-6 text-base text-ink placeholder:text-steel transition-colors duration-300 hover:border-ink/50 focus:border-ink focus:outline-none"
             />
             <button
               type="submit"
               disabled={status === "loading"}
-              className="inline-flex h-14 items-center justify-center rounded-full bg-ink px-8 font-semibold text-white transition-[transform,background-color] duration-300 ease-out-expo hover:bg-walnut active:scale-[0.98] disabled:opacity-70"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-ink px-8 font-semibold text-white transition-[transform,background-color] duration-300 ease-out-expo hover:bg-teak-deep active:scale-[0.98] disabled:opacity-70"
             >
               {status === "loading" ? (
                 <>
@@ -369,18 +402,14 @@ const NewsletterSection: React.FC = () => {
 const Index: React.FC = () => {
   return (
     <Layout>
-      <SEOHead
-        title="TableLK - Premium Office Tables & Furniture Manufacturer in Sri Lanka"
-        description="TableLK - Premium office tables, desks & custom furniture in Sri Lanka. Quality craftsmanship, modern designs, affordable prices. Order now!"
-        keywords="table, office table, desk, furniture, Sri Lanka, TableLK, office furniture, hybrid table, custom furniture, wooden table, modern table, ergonomic desk, workspace furniture, commercial furniture, buy table online Sri Lanka"
-        canonical={`${policyConfig.website}/`}
-      />
+      <SEOHead {...routeSeo("/")} jsonLd={faqLd(HOME_FAQS)} />
       <Hero />
       <FactsStrip />
       <FeaturedProducts />
       <DesignTeaser />
       <ProcessSection />
       <ReviewsSection />
+      <FaqSection />
       <NewsletterSection />
     </Layout>
   );

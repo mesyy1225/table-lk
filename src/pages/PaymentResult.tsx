@@ -301,7 +301,7 @@ const PaymentResult: React.FC = () => {
 
   return (
     <Layout>
-      <SEOHead title={`${seoTitle} | TableLK`} description={seoDescription} />
+      <SEOHead title={`${seoTitle} | TableLK`} description={seoDescription} noindex />
       <div className="shell">
         <div className="mx-auto flex max-w-[35rem] flex-col items-center pt-12 text-center md:pt-20" aria-live="polite">
           <StatusMark key={mark} kind={mark} />

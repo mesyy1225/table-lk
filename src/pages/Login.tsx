@@ -1,3 +1,4 @@
+import SEOHead from "@/components/SEOHead";
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -41,6 +42,7 @@ export const AuthShell: React.FC<AuthShellProps> = ({ title, help, footer, photo
   if (!photo) {
     return (
       <Layout>
+      <SEOHead title={`${title} | TableLK`} noindex />
         <div className="shell py-12 md:py-20">{form}</div>
       </Layout>
     );
@@ -48,6 +50,7 @@ export const AuthShell: React.FC<AuthShellProps> = ({ title, help, footer, photo
 
   return (
     <Layout>
+      <SEOHead title={`${title} | TableLK`} noindex />
       <div className="shell grid items-center gap-12 py-12 md:py-20 lg:grid-cols-2 lg:gap-16 lg:py-14">
         {form}
         <div className="hidden aspect-[4/3] overflow-hidden rounded-2xl bg-secondary lg:block">

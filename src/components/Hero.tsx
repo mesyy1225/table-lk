@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useHeroSlides } from "@/hooks/useHeroSlides";
 import { EASE_OUT, SplitText } from "./motion";
-import { cn } from "@/lib/utils";
 
 const ROTATE_MS = 6500;
+
+const arrowButton =
+  "flex h-11 w-11 items-center justify-center rounded-full border border-white/35 text-white transition-colors duration-300 hover:border-white hover:bg-white hover:text-ink active:scale-95";
 
 /** "TableLK teak-finish dining table on a black steel frame" becomes "Teak-finish dining table on a black steel frame". */
 const caption = (alt: string) => {
@@ -18,14 +20,14 @@ const caption = (alt: string) => {
 /**
  * Home hero. A real table photo fills the first screen and sits behind the header
  * (Layout adds no top offset on "/"). The photos are the admin-managed carousel slides,
- * shown as a fan of sample chips: pick a chip and the photo wipes to that table.
+ * with one slim progress line per photo: pick a line, use the arrows, or swipe, and the photo wipes across.
  */
 const Hero: React.FC = () => {
   const { get } = useSiteContent();
-  const title = get("hero_title", "Tables built to your size.");
+  const title = get("hero_title", "Office tables built to your size.");
   const subtitle = get(
     "hero_subtitle",
-    "Melamine tops on powder-coated steel frames, made to order in our Bandaragama workshop and delivered anywhere in Sri Lanka.",
+    "Office, computer and dining tables made to order in our Bandaragama workshop and delivered anywhere in Sri Lanka.",
   );
   const { slides } = useHeroSlides();
   const reduce = useReducedMotion();
@@ -65,11 +67,18 @@ const Hero: React.FC = () => {
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-22%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  const step = slides.length > 1 ? Math.min(15, 60 / (slides.length - 1)) : 0;
   const active = slides[current] ?? slides[0];
 
   return (
-    <section ref={sectionRef} className="relative flex min-h-hero items-end overflow-hidden bg-ink text-white">
+    <motion.section
+      ref={sectionRef}
+      className="relative flex min-h-hero touch-pan-y items-end overflow-hidden bg-ink text-white"
+      onPanEnd={(_, info) => {
+        // A sideways swipe changes the photo; up-and-down swipes scroll the page as usual.
+        if (slides.length < 2 || Math.abs(info.offset.x) < 56 || Math.abs(info.offset.x) < Math.abs(info.offset.y) * 1.5) return;
+        go(current + (info.offset.x < 0 ? 1 : -1));
+      }}
+    >
       <motion.div className="absolute inset-0" style={reduce ? undefined : { y: photoY }}>
         {slides.map((slide, i) => {
           const isCurrent = i === current;
@@ -91,6 +100,8 @@ const Hero: React.FC = () => {
                 className="h-full w-full object-cover"
                 style={{ objectPosition: slide.object_position }}
                 decoding="async"
+                // React 18 only passes this through in lowercase; it marks the first photo as the page's main image.
+                {...(i === 0 ? ({ fetchpriority: "high" } as object) : {})}
                 initial={isCurrent && !reduce ? { scale: 1.14 } : false}
                 animate={{ scale: 1 }}
                 transition={{ duration: 2.4, ease: EASE_OUT }}
@@ -108,7 +119,7 @@ const Hero: React.FC = () => {
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div>
-          <SplitText as="h1" text={title} immediate delay={0.15} className="display-xl max-w-[11ch]" />
+          <SplitText as="h1" text={title} immediate delay={0.15} className="display-xl max-w-[9.5em]" />
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -144,68 +155,61 @@ const Hero: React.FC = () => {
             initial={reduce ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex items-end gap-5 pr-16 lg:mr-14 lg:flex-col lg:items-end lg:pr-0"
+            className="pr-16 lg:w-[21rem] lg:pr-14"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onFocusCapture={() => setPaused(true)}
             onBlurCapture={() => setPaused(false)}
           >
-            {/* The fan: chips hang from one pin, like a board-sample ring */}
-            <div
-              role="group"
-              aria-label="Choose a table photo"
-              className="relative h-[8.5rem] w-[9.5rem] shrink-0 lg:h-[12.5rem] lg:w-[15rem]"
-            >
-              {slides.map((slide, i) => {
-                const offset = i - current;
-                const isCurrent = offset === 0;
-                return (
-                  <motion.button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => go(i)}
-                    aria-label={`Show photo ${i + 1} of ${slides.length}: ${caption(slide.alt)}`}
-                    aria-pressed={isCurrent}
-                    className={cn(
-                      "chip absolute bottom-0 left-1/2 h-[7.25rem] w-[5rem] origin-[0.9rem_0.9rem] overflow-hidden bg-ash shadow-chip outline-offset-4 lg:h-[10.5rem] lg:w-[7.25rem]",
-                      isCurrent ? "cursor-default" : "cursor-pointer",
-                    )}
-                    style={{ zIndex: isCurrent ? slides.length + 1 : slides.length - Math.abs(offset), marginLeft: "-0.9rem" }}
-                    initial={reduce ? false : { rotate: 0, opacity: 0 }}
-                    animate={{
-                      rotate: offset * step,
-                      opacity: 1,
-                      filter: isCurrent ? "brightness(1)" : "brightness(0.72)",
-                    }}
-                    whileHover={isCurrent ? undefined : { filter: "brightness(0.95)" }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 170,
-                      damping: 20,
-                      delay: reduce ? 0 : previous === null ? 0.9 + i * 0.06 : 0,
-                    }}
-                  >
-                    <img
-                      src={slide.image_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      style={{ objectPosition: slide.object_position }}
-                      decoding="async"
-                    />
-                  </motion.button>
-                );
-              })}
-            </div>
-            <p className="min-w-0 max-w-[15rem] text-sm text-white/80 lg:text-right" aria-live="polite">
-              <span className="num mb-1 block font-semibold text-white">
-                {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
-              </span>
+            <p className="mb-3 hidden text-sm text-white/75 lg:block" aria-live="polite">
               {caption(active?.alt ?? "")}
             </p>
+            <div className="flex items-center gap-4">
+              <span className="num shrink-0 text-sm font-semibold text-white">
+                {String(current + 1).padStart(2, "0")}
+                <span className="text-white/50"> / {String(slides.length).padStart(2, "0")}</span>
+              </span>
+              {/* One line per photo; the current line fills as its time runs. */}
+              <div role="group" aria-label="Choose a table photo" className="flex flex-1 items-center gap-1.5">
+                {slides.map((slide, i) => {
+                  const isCurrent = i === current;
+                  return (
+                    <button
+                      key={slide.id}
+                      type="button"
+                      onClick={() => go(i)}
+                      aria-label={`Show photo ${i + 1} of ${slides.length}: ${caption(slide.alt)}`}
+                      aria-current={isCurrent}
+                      className="group/line flex h-11 flex-1 items-center"
+                    >
+                      <span className="relative block h-0.5 w-full overflow-hidden rounded-full bg-white/30 transition-colors duration-300 group-hover/line:bg-white/55">
+                        {isCurrent && (
+                          <motion.span
+                            key={`${current}-${paused ? "hold" : "run"}`}
+                            className="absolute inset-0 origin-left bg-white"
+                            initial={{ scaleX: paused || reduce ? 1 : 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: paused || reduce ? 0 : ROTATE_MS / 1000, ease: "linear" }}
+                          />
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="hidden shrink-0 gap-2 lg:flex">
+                <button type="button" onClick={() => go(current - 1)} aria-label="Previous photo" className={arrowButton}>
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => go(current + 1)} aria-label="Next photo" className={arrowButton}>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </motion.div>
         )}
       </motion.div>
-    </section>
+    </motion.section>
   );
 };
 

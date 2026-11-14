@@ -1,3 +1,4 @@
+import SEOHead from "@/components/SEOHead";
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
@@ -24,6 +25,7 @@ const NotFound = () => {
 
   return (
     <Layout>
+      <SEOHead title="Page not found | TableLK" noindex />
       <section className="shell py-16 md:py-28">
         <h1 className="display-lg max-w-[14ch]">We can't find that page.</h1>
         <p className="mt-5 max-w-[52ch] text-steel md:text-lg">

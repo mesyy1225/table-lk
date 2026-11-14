@@ -168,7 +168,9 @@ try {
   fs.writeFileSync(out, Buffer.from(shot.data, "base64"));
   console.log(`${out}  ${width}x${full ? pageHeight : height}  page height ${pageHeight}px  sideways scroll: ${sideways ? "YES" : "no"}`);
   const real = errors.filter((e) => !/hero_slides|customer_reviews|404|Failed to load resource|botpress/i.test(e));
-  if (real.length) console.log("console errors:\n  " + [...new Set(real)].slice(0, 8).join("\n  "));
+  // Only the first line of each error: stack traces would flood the output.
+  const firstLines = [...new Set(real.map((e) => String(e).split("\n")[0].slice(0, 240)))];
+  if (firstLines.length) console.log(["console errors:", ...firstLines.slice(0, 8)].join("\n  "));
   ws.close();
   done(0);
 } catch (e) {
