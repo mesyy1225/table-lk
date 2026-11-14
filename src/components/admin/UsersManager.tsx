@@ -19,6 +19,14 @@ interface AdminUser {
 const call = async (body: Record<string, unknown>) => {
   const { data, error } = await supabase.functions.invoke("admin-users", { body });
   if (error) {
+    const status = (error as any).context?.status;
+    // Not deployed (404) or unreachable (fetch/CORS failure) -> explain how to fix it.
+    if (status === 404 || error.name === "FunctionsFetchError" || error.name === "FunctionsRelayError") {
+      throw new Error(
+        "The admin-users server function isn't deployed to the new Supabase project yet. " +
+          "Deploy it (see supabase/README.md, step 3) and reload this page."
+      );
+    }
     let msg = error.message;
     try { msg = (await (error as any).context.json()).error || msg; } catch { /* ignore */ }
     throw new Error(msg);
@@ -30,16 +38,18 @@ const call = async (body: Record<string, unknown>) => {
 const UsersManager: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [pwUser, setPwUser] = useState<AdminUser | null>(null);
   const [newPw, setNewPw] = useState("");
 
   const load = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const d = await call({ action: "list" });
       setUsers(d.users);
     } catch (e: any) {
-      toast.error(e.message);
+      setLoadError(e.message);
     }
     setLoading(false);
   };
@@ -77,6 +87,12 @@ const UsersManager: React.FC = () => {
         <CardTitle>Users ({users.length})</CardTitle>
       </CardHeader>
       <CardContent>
+        {loadError && (
+          <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive flex flex-wrap items-center justify-between gap-3">
+            <span>{loadError}</span>
+            <Button size="sm" variant="outline" onClick={load}>Try again</Button>
+          </div>
+        )}
         {loading ? (
           <p className="text-muted-foreground">Loading...</p>
         ) : (

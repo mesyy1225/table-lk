@@ -9,6 +9,66 @@ import { Facebook, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { policyConfig } from "@/lib/policyConfig";
+import ReviewCard, { Stars } from "@/components/ReviewCard";
+import { useHomeReviews } from "@/hooks/useCustomerReviews";
+import { useProducts } from "@/hooks/useProducts";
+
+const ReviewsSection: React.FC = () => {
+  const { data: reviews = [] } = useHomeReviews();
+  const { data: products = [] } = useProducts();
+  const productName = (id: string | null) => (id ? products.find((p) => String(p.id) === id)?.name : undefined);
+  const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
+
+  return (
+    <section className="py-16 md:py-20 bg-accent/40">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-10 md:mb-12">
+          <span className="inline-block text-sm font-semibold tracking-wider uppercase text-primary/70 mb-3">
+            Customer reviews
+          </span>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">See what our customers say</h2>
+          {reviews.length > 0 ? (
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <Stars rating={Math.round(average)} />
+              <span>
+                {average.toFixed(1)} from {reviews.length} review{reviews.length > 1 ? "s" : ""}
+              </span>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              Read honest reviews and see photos from TableLK customers across Sri Lanka on our Facebook page.
+            </p>
+          )}
+        </div>
+
+        {reviews.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-10 items-start">
+            {reviews.map((r, index) => (
+              <motion.div
+                key={r.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: Math.min(index, 5) * 0.08 }}
+                viewport={{ once: true }}
+              >
+                <ReviewCard review={r} productName={productName(r.product_id)} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        <div className="text-center">
+          <Button size="lg" variant={reviews.length ? "outline" : "default"} asChild>
+            <a href={policyConfig.facebookUrl} target="_blank" rel="noopener noreferrer">
+              <Facebook className="mr-2 h-5 w-5" />
+              {reviews.length ? "More reviews on Facebook" : "Read our reviews on Facebook"}
+            </a>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -201,28 +261,8 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        {/* Customer reviews: real reviews live on Facebook */}
-        <section className="py-16 md:py-20 bg-accent/40">
-          <div className="container mx-auto px-6">
-            <div className="max-w-2xl mx-auto text-center">
-              <span className="inline-block text-sm font-semibold tracking-wider uppercase text-primary/70 mb-3">
-                Customer reviews
-              </span>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-                See what our customers say
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Read honest reviews and see photos from TableLK customers across Sri Lanka on our Facebook page.
-              </p>
-              <Button size="lg" asChild>
-                <a href={policyConfig.facebookUrl} target="_blank" rel="noopener noreferrer">
-                  <Facebook className="mr-2 h-5 w-5" />
-                  Read our reviews on Facebook
-                </a>
-              </Button>
-            </div>
-          </div>
-        </section>
+        {/* Customer reviews: managed in Admin → Reviews, with a link to Facebook */}
+        <ReviewsSection />
 
         {/* Newsletter Section */}
         <NewsletterSection />

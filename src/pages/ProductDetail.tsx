@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { policyConfig } from "@/lib/policyConfig";
 import { useProduct } from "@/hooks/useProducts";
+import { useProductReviews } from "@/hooks/useCustomerReviews";
+import ReviewCard from "@/components/ReviewCard";
 import PaymentBadges from "@/components/PaymentBadges";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -20,6 +22,8 @@ const ProductDetail: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
 
   const { product, isLoading } = useProduct(id);
+  // Reviews are managed in Admin → Reviews and linked to database products.
+  const { data: reviews = [] } = useProductReviews(product ? String(product.id) : undefined);
 
   const formatPrice = (price: number) => {
     return `LKR ${price.toLocaleString('en-LK')}`;
@@ -65,7 +69,8 @@ const ProductDetail: React.FC = () => {
     navigate("/checkout", { state: { buyNow: { productId: product.id, quantity, color } } });
   };
 
-  const hasReviews = product.reviews.length > 0;
+  const hasReviews = reviews.length > 0;
+  const averageRating = hasReviews ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
   const { western, other } = policyConfig.deliveryFee;
   const minFee = Math.min(western, other);
   const deliveryFeeText = western === 0 && other === 0 ? "Free" : `from ${formatPrice(minFee)}`;
@@ -127,15 +132,15 @@ const ProductDetail: React.FC = () => {
             <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">{product.name}</h1>
 
             {hasReviews && (
-              <div className="flex items-center mb-4">
+              <a href="#reviews" className="flex items-center mb-4 w-fit">
                 <div className="flex items-center text-amber-500 mr-3">
                   <Star className="h-4 w-4 fill-current" />
-                  <span className="ml-1 text-sm font-medium">{product.rating}</span>
+                  <span className="ml-1 text-sm font-medium">{averageRating.toFixed(1)}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  ({product.reviews.length} {product.reviews.length === 1 ? 'review' : 'reviews'})
+                <span className="text-sm text-muted-foreground underline-offset-2 hover:underline">
+                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
                 </span>
-              </div>
+              </a>
             )}
 
             <div className="text-2xl font-semibold mt-4 mb-2">{formatPrice(product.price)}</div>
@@ -282,44 +287,28 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="reviews-section mb-20">
+        <div id="reviews" className="reviews-section mb-20 scroll-mt-28">
           <h2 className="text-2xl font-serif font-bold mb-8">Customer Reviews</h2>
 
-          <div className="space-y-6">
-            {!hasReviews ? (
-              <p className="text-muted-foreground">
-                No reviews yet.{" "}
-                <a
-                  href={policyConfig.facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary underline underline-offset-2"
-                >
-                  See what our customers say on Facebook
-                </a>
-              </p>
-            ) : (
-              product.reviews.map((review) => (
-                <div key={review.id} className="border-b border-border pb-6 last:border-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-medium">{review.userName}</h3>
-                      <div className="flex items-center text-amber-500 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-3 w-3 ${i < review.rating ? 'fill-current' : 'text-muted-foreground'}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-sm text-muted-foreground">{review.date}</span>
-                  </div>
-                  <p className="text-muted-foreground mt-2">{review.comment}</p>
-                </div>
-              ))
-            )}
-          </div>
+          {hasReviews ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              {reviews.map((r) => (
+                <ReviewCard key={r.id} review={r} className="border" />
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              No reviews for this table yet.{" "}
+              <a
+                href={policyConfig.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline underline-offset-2"
+              >
+                See what our customers say on Facebook
+              </a>
+            </p>
+          )}
         </div>
       </div>
 

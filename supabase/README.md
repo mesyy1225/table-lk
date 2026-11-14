@@ -8,6 +8,11 @@ The old Supabase project is gone. These steps set up the new, empty project once
 2. Paste the whole of `supabase/setup.sql` and click **Run** (confirm the "destructive operation" warning; it only drops policies it recreates).
 3. It runs in one transaction: tables, security rules, functions, the `product-images` storage bucket and the 6 starter products. Run it only once.
 
+**Already ran `setup.sql` before the carousel/reviews update?** Run only
+`supabase/migrations/20261115090000_hero_slides_customer_reviews.sql` the same way.
+It adds the `hero_slides` and `customer_reviews` tables (Admin → Carousel / Reviews) and
+seeds the carousel with the current product photos. It is safe to run more than once.
+
 ## 2. Create the admin account
 
 1. Dashboard → **Authentication** → **Users** → **Add user** → **Create new user**.
@@ -31,6 +36,17 @@ supabase functions deploy admin-users --no-verify-jwt
 supabase functions deploy payhere-checkout --no-verify-jwt
 supabase functions deploy payhere-notify --no-verify-jwt
 ```
+
+**No CLI? Use the dashboard instead.** For each function (`admin-users`, `payhere-checkout`, `payhere-notify`):
+
+1. Dashboard → **Edge Functions** → **Deploy a new function** → **Via Editor**.
+2. Name it exactly as above, replace the sample code with the contents of
+   `supabase/functions/<name>/index.ts`, and click **Deploy function**.
+3. Open the function → **Details** → turn **off** "Verify JWT with legacy secret" (Enforce JWT) → **Save**.
+   The site uses the new publishable key, which is not a JWT, so the check must be off;
+   each function does its own authorisation.
+
+Until `admin-users` is deployed, Admin → Users shows "the admin-users server function isn't deployed".
 
 ## 4. PayHere card payments
 

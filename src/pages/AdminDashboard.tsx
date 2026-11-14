@@ -11,6 +11,8 @@ import OrdersManager from "@/components/admin/OrdersManager";
 import UsersManager from "@/components/admin/UsersManager";
 import SiteContentManager from "@/components/admin/SiteContentManager";
 import MessagesManager from "@/components/admin/MessagesManager";
+import HeroSlidesManager from "@/components/admin/HeroSlidesManager";
+import ReviewsManager from "@/components/admin/ReviewsManager";
 
 const AdminDashboard: React.FC = () => {
   const { state, logout } = useAuth();
@@ -57,12 +59,16 @@ const AdminDashboard: React.FC = () => {
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="carousel">Carousel</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="content">Site Content</TabsTrigger>
           </TabsList>
           <TabsContent value="products"><ProductsManager /></TabsContent>
           <TabsContent value="orders"><OrdersManager /></TabsContent>
           <TabsContent value="messages"><MessagesManager /></TabsContent>
+          <TabsContent value="carousel"><HeroSlidesManager /></TabsContent>
+          <TabsContent value="reviews"><ReviewsManager /></TabsContent>
           <TabsContent value="users"><UsersManager /></TabsContent>
           <TabsContent value="content"><SiteContentManager /></TabsContent>
         </Tabs>

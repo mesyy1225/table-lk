@@ -5,30 +5,7 @@ import { Link } from "react-router-dom";
 import { motion, useAnimation, useInView, type Variants } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/policyConfig";
-
-// Real TableLK product photos (landscape shots of finished tables).
-const slides = [
-  {
-    src: "https://u.cubeupload.com/Tablelkk/IMG20250409WA0003.jpg",
-    alt: "TableLK L-shaped office table with ash-white top and black steel frame",
-    position: "object-[70%_60%]",
-  },
-  {
-    src: "https://u.cubeupload.com/Tablelkk/IMG20250330WA0004.jpg",
-    alt: "TableLK teak-finish dining table on a black steel frame",
-    position: "object-[60%_50%]",
-  },
-  {
-    src: "https://u.cubeupload.com/Tablelkk/WhatsAppImage2025031.jpg",
-    alt: "TableLK smart computer table with black top and white steel frame",
-    position: "object-[70%_55%]",
-  },
-  {
-    src: "https://u.cubeupload.com/Tablelkk/IMG20250120WA0011.jpg",
-    alt: "TableLK modern L-shaped workstation with teak top and white frame",
-    position: "object-[65%_55%]",
-  },
-];
+import { useHeroSlides } from "@/hooks/useHeroSlides";
 
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
@@ -59,7 +36,13 @@ const Hero: React.FC = () => {
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const { slides } = useHeroSlides();
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Slides can change after loading from the database; keep the index in range.
+  useEffect(() => {
+    if (currentSlide >= slides.length) setCurrentSlide(0);
+  }, [slides.length, currentSlide]);
 
   // Auto rotate slides
   useEffect(() => {
@@ -67,7 +50,7 @@ const Hero: React.FC = () => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   useEffect(() => {
     if (isInView) controls.start("visible");
@@ -84,14 +67,15 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0 w-full h-full">
         {slides.map((slide, index) => (
           <div
-            key={slide.src}
+            key={slide.id}
             className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
             aria-hidden={index !== currentSlide}
           >
             <img
-              src={slide.src}
+              src={slide.image_url}
               alt={slide.alt}
-              className={`object-cover w-full h-full ${slide.position}`}
+              className="object-cover w-full h-full"
+              style={{ objectPosition: slide.object_position }}
               loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
             />
@@ -100,7 +84,8 @@ const Hero: React.FC = () => {
         {/* Dark gradient overlay for text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40 md:bg-gradient-to-r md:from-black/80 md:via-black/50 md:to-black/10" />
 
-        {/* Slide Controls */}
+        {/* Slide Controls (hidden when there is only one slide) */}
+        {slides.length > 1 && (
         <div className="absolute bottom-6 left-6 md:left-auto md:bottom-10 md:right-10 flex items-center space-x-2 z-20">
           <button onClick={prevSlide} className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors text-white" aria-label="Previous slide">
             <ChevronLeft size={20} />
@@ -119,6 +104,7 @@ const Hero: React.FC = () => {
             <ChevronRight size={20} />
           </button>
         </div>
+        )}
       </div>
 
       {/* pb-24 on mobile keeps the CTAs clear of the slide controls pinned to the bottom */}
